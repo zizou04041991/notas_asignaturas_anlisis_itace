@@ -1,0 +1,16 @@
+<div class="flex h-screen bg-gray-100 overflow-hidden">
+    <!-- Menu Component -->
+    <app-menu [(menuAbierto)]="menuAbierto" (menuAbiertoChange)="onMenuAbiertoChange($event)">
+    </app-menu>
+    
+    <!-- Contenido principal -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Banner Component -->
+        <app-banner [titulo]="tituloPagina" (toggleMenu)="toggleMenu()"> </app-banner>
+        
+        <!-- Router Outlet para el contenido dinámico - scrollable -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>

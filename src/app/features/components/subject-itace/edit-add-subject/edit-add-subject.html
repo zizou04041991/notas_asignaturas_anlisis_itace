@@ -1,0 +1,86 @@
+<!-- Formulario con validaciones mejoradas -->
+<div class="p-6 bg-white rounded-lg shadow-sm" [formGroup]="formSubject">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+     <!-- Campo nombre -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Nombre de la asignatura <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        placeholder="Asignatura"
+        formControlName="nombre"
+        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
+        [class.border-red-400]="campoInvalido('nombre')"
+        [class.bg-red-50]="campoInvalido('nombre')"
+        [class.border-gray-300]="!campoInvalido('nombre')"
+      />
+
+      @if (campoInvalido('nombre')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formSubject.get('nombre')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El nombre es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+
+      <!-- Campo color -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Color de la asignatura <span class="text-red-500">*</span>
+      </label>
+      <div class="flex items-center gap-3">
+        <p-colorpicker
+          formControlName="color"
+          [inline]="true"
+          [style]="{
+            border: campoInvalido('color') ? '2px solid #ef4444' : '1px solid #d1d5db',
+            'border-radius': '6px',
+            transition: 'all 0.15s ease',
+          }"
+          (onHide)="hideColor()"
+        />
+        <span class="text-xs text-gray-500">
+          {{ formSubject.get('color')?.value || 'Selecciona un color' }}
+        </span>
+      </div>
+
+      @if (campoInvalido('color')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          <div class="flex items-start gap-1.5">
+            <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+            <span>Debes seleccionar un color</span>
+          </div>
+        </div>
+      }
+    </div>
+   
+  
+
+    <!-- Botones -->
+    <div class="col-span-1 md:col-span-2 mt-2">
+      <div class="flex justify-between items-center border-t border-gray-100 pt-4">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (click)="onCancel()"
+          styleClass="p-button-sm p-button-text"
+          [outlined]="true"
+        />
+        <p-button
+          label="Guardar"
+          severity="info"
+          (click)="onSave()"
+          styleClass="p-button-sm"
+          [loading]="false"
+        />
+      </div>
+    </div>
+  </div>
+</div>

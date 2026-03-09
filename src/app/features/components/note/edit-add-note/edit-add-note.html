@@ -1,0 +1,134 @@
+<!-- Formulario con validaciones mejoradas -->
+<div class="p-6 bg-white rounded-lg shadow-sm" [formGroup]="formNote">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <!-- Campo estudiante -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Estudiante <span class="text-red-500">*</span>
+      </label>
+      <p-select
+        [options]="STUDENTS"
+        formControlName="estudiante_id"
+        class="w-full transition duration-150"
+        placeholder="Seleccione estudiante"
+        optionLabel="nombre_completo"
+        optionValue="id"
+        [invalid]="campoInvalido('estudiante_id')"
+        [virtualScroll]="true"
+        [virtualScrollItemSize]="5"
+        [filter]="true"
+        filterBy="nombre_completo"
+        [loading]="loading"
+      />
+
+      @if (campoInvalido('estudiante_id')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formNote.get('estudiante_id')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El estudiante es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Campo asignatura_id -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Asignatura <span class="text-red-500">*</span>
+      </label>
+
+      <p-select
+        [options]="SUBJECTS"
+        formControlName="asignatura_id"
+        class="w-full transition duration-150"
+        placeholder="Seleccione Asignatura"
+        optionLabel="nombre"
+        optionValue="id"
+        [invalid]="campoInvalido('asignatura_id')"
+        [virtualScroll]="true"
+        [virtualScrollItemSize]="5"
+        [filter]="true"
+        filterBy="nombre"
+        [loading]="loading"
+      />
+
+      @if (campoInvalido('asignatura_id')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formNote.get('asignatura_id')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>La asignatura es obligatoria</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Campo Nombre -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Nota <span class="text-red-500">*</span>
+      </label>
+      <!--
+      <input
+        type="number"
+        placeholder="Nota"
+        formControlName="nota"
+        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
+        [class.border-red-400]="campoInvalido('nota')"
+        [class.bg-red-50]="campoInvalido('nota')"
+        [class.border-gray-300]="!campoInvalido('nota')"
+      /> -->
+      <!--
+      <p-inputnumber
+        formControlName="nota"
+        class="w-full"
+        [invalid]="campoInvalido('nota')"
+        mode="decimal"
+        inputId="withoutgrouping"
+        [useGrouping]="false"
+      />-->
+      <p-inputnumber
+        formControlName="nota"
+        class="w-full"
+        inputId="minmaxfraction"
+        mode="decimal"
+        [maxFractionDigits]="2"
+        [invalid]="campoInvalido('nota')"
+      />
+
+      @if (campoInvalido('nota')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formNote.get('nota')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El nota es obligatoria</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Botones -->
+    <div class="col-span-1 md:col-span-2 mt-2">
+      <div class="flex justify-between items-center border-t border-gray-100 pt-4">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (click)="onCancel()"
+          styleClass="p-button-sm p-button-text"
+          [outlined]="true"
+        />
+        <p-button
+          label="Guardar"
+          severity="info"
+          (click)="onSave()"
+          styleClass="p-button-sm"
+          [loading]="false"
+        />
+      </div>
+    </div>
+  </div>
+</div>

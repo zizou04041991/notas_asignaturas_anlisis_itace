@@ -1,0 +1,41 @@
+<div class="card flex justify-center gap-2">
+  <p-confirmdialog />
+</div>
+
+<div class="bg-white rounded-xl shadow-md p-4 md:p-6">
+  <div class="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-3 mb-4 md:mb-6">
+    <button
+      class="text-sm bg-blue-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
+      (click)="addSemester()"
+    >
+      + Nueva Semestre
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="p-4">
+      <app-table
+        [data]="semester()"
+        [columns]="columns"
+        [loading]="loading()"
+        [totalRecords]="totalRecords()"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 20, 50]"
+        [showToolbar]="false"
+        [showGlobalFilter]="false"
+        [showColumnFilters]="false"
+        [showAddButton]="false"
+        [showExportButton]="false"
+        [showActions]="true"
+        [showViewAction]="false"
+        [showEditAction]="true"
+        [showDeleteAction]="true"
+        (onEdit)="onEditSemester($event)"
+        (onDelete)="onDeleteSemester($event)"
+      >
+        
+      </app-table>
+    </div>
+  </div>
+</div>

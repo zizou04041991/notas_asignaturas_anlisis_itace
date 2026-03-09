@@ -1,0 +1,28 @@
+ <header class="bg-white shadow-sm flex-shrink-0">
+        <div class="px-4 md:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <button (click)="toggleMenu.emit()" class="text-gray-600 hover:text-gray-800 cursor-pointer md:hidden">
+                    <fa-icon [icon]="faBars" class="text-2xl"></fa-icon>
+                </button>
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-800">{{ titulo }}</h2>
+            </div>
+<!--
+            <div class="flex items-center gap-3 md:gap-4">
+                <button class="text-gray-600 hover:text-gray-800 transition relative">
+                    <fa-icon [icon]="faBell" class="text-lg md:text-xl"></fa-icon>
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+                </button>
+                <button class="text-gray-600 hover:text-gray-800 transition relative">
+                    <fa-icon [icon]="faEnvelope" class="text-lg md:text-xl"></fa-icon>
+                    <span class="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">5</span>
+                </button>
+                <div class="hidden md:block text-gray-600 hover:text-gray-800 transition">
+                    <fa-icon [icon]="faSearch" class="text-xl"></fa-icon>
+                </div>
+                <div class="md:hidden">
+                    <fa-icon [icon]="faUserCircle" class="text-2xl text-gray-600"></fa-icon>
+                </div>
+            </div>
+        -->
+        </div>
+    </header>

@@ -1,0 +1,59 @@
+<!-- Formulario con validaciones mejoradas -->
+<div class="p-6 bg-white rounded-lg shadow-sm" [formGroup]="formSemester">
+  <div class="grid grid-cols-1  gap-5">
+
+     <!-- Campo numero -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Semestre <span class="text-red-500">*</span>
+      </label>
+    
+      <p-inputnumber
+        formControlName="numero"
+        class="w-full"
+        [invalid]="campoInvalido('numero')"
+        mode="decimal"
+        inputId="withoutgrouping"
+        [useGrouping]="false"
+      />
+
+      @if (campoInvalido('numero')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formSemester.get('numero')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El semestre es obligatorio</span>
+            </div>
+          }
+           @if (formSemester.get('numero')?.errors?.['min']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El semestre debe ser positivo</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+ 
+
+    <!-- Botones -->
+    <div class="col-span-1 md:col-span-2 mt-2">
+      <div class="flex justify-between items-center border-t border-gray-100 pt-4">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (click)="onCancel()"
+          styleClass="p-button-sm p-button-text"
+          [outlined]="true"
+        />
+        <p-button
+          label="Guardar"
+          severity="info"
+          (click)="onSave()"
+          styleClass="p-button-sm"
+          [loading]="false"
+        />
+      </div>
+    </div>
+  </div>
+</div>

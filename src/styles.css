@@ -1,3 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+
+@import "primeicons/primeicons.css";
+
+
+/* Estilos adicionales si los necesitas */
+.translate-x-0 {
+    transform: translateX(0) !important;
+}
+
+.-translate-x-full {
+    transform: translateX(-100%) !important;
+}
+
+@media (min-width: 768px) {
+    .md\:translate-x-0 {
+        transform: translateX(0) !important;
+    }
+}

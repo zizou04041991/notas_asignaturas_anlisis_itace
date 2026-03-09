@@ -1,0 +1,74 @@
+<div class="card flex justify-center gap-2">
+  <p-confirmdialog />
+</div>
+
+<div class="bg-white rounded-xl shadow-md p-4 md:p-6">
+  <div
+    class="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-3 mb-4 md:mb-6"
+  >
+   
+    <button
+    (click)="addNote()"
+      class="text-sm bg-blue-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
+    >
+      + Nueva Nota
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="p-4">
+      <app-table
+        [data]="notes()"
+        [columns]="columns"
+        [loading]="loading()"
+        [totalRecords]="totalRecords()"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 20, 50]"
+        [showToolbar]="false"
+        [showGlobalFilter]="false"
+        [showColumnFilters]="false"
+        [showAddButton]="false"
+        [showExportButton]="false"
+        [showActions]="true"
+        [showViewAction]="false"
+        [showEditAction]="true"
+        [showDeleteAction]="true"
+        (onEdit)="onEditNote($event)"
+        (onDelete)="onDeleteNote($event)"
+      >
+        
+      </app-table>
+    </div>
+  </div>
+
+</div>
+
+
+
+<!--
+"estudiante": {
+            "id": 1,
+            "curp": "1234568",
+            "nombre": "tito",
+            "apellidos": "castillo marrero",
+            "semestre_actual": {
+                "id": 2,
+                "numero": 2
+            },
+            "nombre_completo": "tito castillo marrero",
+            "fecha_registro": "2026-03-08T05:23:54.070878Z",
+            "fecha_actualizacion": "2026-03-08T05:23:54.070940Z"
+        },
+        "asignatura": {
+            "id": 4,
+            "nombre": "geografia",
+            "color": "#000000",
+            "fecha_creacion": "2026-03-08T07:50:35.334052Z",
+            "fecha_actualizacion": "2026-03-08T07:50:35.334106Z"
+        },
+        "semestre_cursado": {
+            "id": 2,
+            "numero": 2
+        },
+        "nota": "9.00",-->

@@ -1,0 +1,167 @@
+   <div class="card">
+      <!-- Barra de herramientas opcional -->
+      @if (showToolbar) {
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex gap-2">
+            @if (showAddButton) {
+              <p-button 
+                label="Agregar" 
+                icon="pi pi-plus" 
+                severity="success"
+                (click)="onAdd.emit()"
+                styleClass="p-button-sm"
+              />
+            }
+            @if (showExportButton) {
+              <p-button 
+                label="Exportar" 
+                icon="pi pi-download" 
+                severity="help"
+                (click)="onExport.emit()"
+                styleClass="p-button-sm"
+              />
+            }
+          </div>
+          
+          <!-- Búsqueda global -->
+          @if (showGlobalFilter) {
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input 
+                pInputText 
+                type="text" 
+                [placeholder]="searchPlaceholder"
+                (input)="onSearch($event)"
+                class="p-inputtext-sm"
+              />
+            </span>
+          }
+        </div>
+      }
+
+      <!-- Tabla principal -->
+      <p-table
+        #dt
+        [value]="data"
+        [columns]="columns"
+        [paginator]="paginator"
+        [rows]="rows"
+        [totalRecords]="totalRecords"
+        [loading]="loading"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [globalFilterFields]="globalFilterFields"
+        [sortField]="sortField"
+        [sortOrder]="sortOrder"
+        [tableStyle]="tableStyle"
+        [scrollable]="scrollable"
+        [scrollHeight]="scrollHeight"
+        [selectionMode]="selectionMode"
+        [(selection)]="selection"
+        (onPage)="onPageChange.emit($event)"
+        (onSort)="onSortChange.emit($event)"
+        (onFilter)="onFilterChange.emit($event)"
+      >
+        <!-- Header con filtros -->
+        <ng-template #header let-columns>
+          <tr>
+            @for (col of columns; track col.field) {
+              <th 
+                [style.width]="col.width"
+                [pSortableColumn]="col.sortable ? col.field : null"
+              >
+                <div class="flex items-center gap-1">
+                  {{ col.header }}
+                  @if (col.sortable) {
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                  }
+                </div>
+                
+                <!-- Filtro por columna -->
+                @if (col.filterable && showColumnFilters) {
+                  <div class="mt-2">
+                    <input 
+                      pInputText 
+                      type="text" 
+                      class="w-full p-inputtext-sm"
+                      [placeholder]="'Filtrar ' + col.header.toLowerCase()"
+                      (input)="onColumnFilter($event, col.field)"
+                    />
+                  </div>
+                }
+              </th>
+            }
+            
+            <!-- Columna de acciones -->
+            @if (showActions) {
+              <th style="width: 8rem">Acciones</th>
+            }
+          </tr>
+        </ng-template>
+
+        <!-- Body de la tabla -->
+        <ng-template #body let-rowData let-columns="columns">
+          <tr>
+            @for (col of columns; track col.field) {
+              <td>
+                @if (col.type === 'custom' && col.template) {
+                  <!-- Template personalizado -->
+                  <ng-container 
+                    *ngTemplateOutlet="col.template; context: { $implicit: rowData }"
+                  ></ng-container>
+                } @else if (col.type === 'currency') {
+                  {{ rowData[col.field] | currency }}
+                } @else if (col.type === 'date') {
+                  {{ rowData[col.field] | date: col.format || 'dd/MM/yyyy' }}
+                } @else {
+                  {{ rowData[col.field] }}
+                }
+              </td>
+            }
+            
+            <!-- Acciones -->
+            @if (showActions) {
+              <td>
+                <div class="flex gap-2">
+                  @if (showViewAction) {
+                    <p-button 
+                      icon="pi pi-eye" 
+                      severity="info" 
+                      styleClass="p-button-rounded p-button-text p-button-sm"
+                      (click)="onView.emit(rowData)"
+                      pTooltip="Ver detalles"
+                    />
+                  }
+                  @if (showEditAction) {
+                    <p-button 
+                      icon="pi pi-pencil" 
+                      severity="info" 
+                      styleClass="p-button-rounded p-button-text p-button-sm"
+                      (click)="onEdit.emit(rowData)"
+                      pTooltip="Editar"
+                    />
+                  }
+                  @if (showDeleteAction) {
+                    <p-button 
+                      icon="pi pi-trash" 
+                      severity="danger" 
+                      styleClass="p-button-rounded p-button-text p-button-sm"
+                      (click)="onDelete.emit(rowData)"
+                      pTooltip="Eliminar"
+                    />
+                  }
+                </div>
+              </td>
+            }
+          </tr>
+        </ng-template>
+
+        <!-- Empty message -->
+        <ng-template #emptymessage>
+          <tr>
+            <td [attr.colspan]="columns.length + (showActions ? 1 : 0)" class="text-center p-4">
+              No hay registros para mostrar
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>

@@ -1,0 +1,148 @@
+<!-- Formulario con validaciones mejoradas -->
+<div class="p-6 bg-white rounded-lg shadow-sm" [formGroup]="formStudent">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <!-- Campo curp -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        CURP <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        placeholder="CURP"
+        formControlName="curp"
+        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
+        [class.border-red-400]="campoInvalido('curp')"
+        [class.bg-red-50]="campoInvalido('curp')"
+        [class.border-gray-300]="!campoInvalido('curp')"
+      />
+
+      @if (campoInvalido('curp')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formStudent.get('curp')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El curp es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Campo semestre_id -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Semestre <span class="text-red-500">*</span>
+      </label>
+      <!--
+      <input
+        type="text"
+        placeholder="Semestre"
+        formControlName="semestre_id"
+        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
+        [class.border-red-400]="campoInvalido('semestre_id')"
+        [class.bg-red-50]="campoInvalido('semestre_id')"
+        [class.border-gray-300]="!campoInvalido('semestre_id')"
+      /> -->
+
+      <p-select
+        [options]="SEMESTER"
+        formControlName="semestre_id"
+        class="w-full transition duration-150"
+        placeholder="Seleccione Semestre"
+        optionLabel="numero"
+        optionValue="id"
+        [invalid]="campoInvalido('semestre_id')"
+        [virtualScroll]="true"
+        [virtualScrollItemSize]="5"
+        [filter]="true"
+        filterBy="numero"
+        [loading]="loading"
+      />
+
+      @if (campoInvalido('semestre_id')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formStudent.get('semestre_id')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El semestre_id es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Campo Nombre -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Nombre <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        placeholder="Nombre"
+        formControlName="nombre"
+        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
+        [class.border-red-400]="campoInvalido('nombre')"
+        [class.bg-red-50]="campoInvalido('nombre')"
+        [class.border-gray-300]="!campoInvalido('nombre')"
+      />
+
+      @if (campoInvalido('nombre')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formStudent.get('nombre')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El nombre es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Campo apellidos -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        Apellidos <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        placeholder="Apellidos"
+        formControlName="apellidos"
+        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
+        [class.border-red-400]="campoInvalido('apellidos')"
+        [class.bg-red-50]="campoInvalido('apellidos')"
+        [class.border-gray-300]="!campoInvalido('apellidos')"
+      />
+
+      @if (campoInvalido('apellidos')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formStudent.get('apellidos')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El apellidos es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Botones -->
+    <div class="col-span-1 md:col-span-2 mt-2">
+      <div class="flex justify-between items-center border-t border-gray-100 pt-4">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (click)="onCancel()"
+          styleClass="p-button-sm p-button-text"
+          [outlined]="true"
+        />
+        <p-button
+          label="Guardar"
+          severity="info"
+          (click)="onSave()"
+          styleClass="p-button-sm"
+          [loading]="false"
+        />
+      </div>
+    </div>
+  </div>
+</div>
