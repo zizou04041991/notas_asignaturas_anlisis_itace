@@ -31,28 +31,35 @@ export class Note {
       field: 'estudiante_nombre_completo',
       header: 'Estudiante',
       width: '25%',
-      sortable: false,
+      sortable: true,
       filterable: true,
     },
     {
       field: 'asignatura_nombre',
       header: 'Asignatura',
       width: '25%',
-      sortable: false,
+      sortable: true,
       filterable: true,
     },
     {
       field: 'semestre_cursado_numero',
       header: 'Semestre',
       width: '25%',
-      sortable: false,
+      sortable: true,
+      filterable: true,
+    },
+    {
+      field: 'tcp_numero',
+      header: 'TCP',
+      width: '25%',
+      sortable: true,
       filterable: true,
     },
     {
       field: 'nota',
       header: 'Nota',
       width: '25%',
-      sortable: false,
+      sortable: true,
       filterable: true,
     },
   ];
@@ -75,6 +82,7 @@ export class Note {
             estudiante_nombre_completo: note.estudiante?.nombre_completo,
             asignatura_nombre: note.asignatura.nombre,
             semestre_cursado_numero: note.semestre_cursado.numero,
+            tcp_numero: note.tcp.numero
           })),
         );
         this.loading.set(false);

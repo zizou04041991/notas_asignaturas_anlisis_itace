@@ -1,0 +1,104 @@
+<div
+  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4"
+>
+  <!-- Contenedor principal -->
+  <div class="w-full max-w-md">
+    <!-- Tarjeta de login -->
+    <p-card class="shadow-2xl">
+      <div class="text-center mb-8">
+        <!-- Logo o icono -->
+        <div class="flex justify-center mb-4">
+          <div class="bg-indigo-600 p-4 rounded-full">
+            <i class="pi pi-shield text-4xl text-white"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <form [formGroup]="loginForm" class="space-y-5">
+        <!-- Campo username -->
+        <div class="field">
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+            Usuario
+          </label>
+
+          <p-inputgroup>
+            <p-inputgroup-addon>
+              <i class="pi pi-user"></i>
+            </p-inputgroup-addon>
+            <input
+              pInputText
+              formControlName="username"
+              placeholder="Username"
+              [invalid]="username?.invalid && username?.touched"
+            />
+          </p-inputgroup>
+
+          @if (username?.invalid && username?.touched) {
+            <small class="text-red-500 block mt-1">
+              @if (username?.errors?.['required']) {
+                <span>El usuario es requerido</span>
+              }
+            </small>
+          }
+        </div>
+
+        <!-- Campo Contraseña -->
+        <div class="field">
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Contraseña
+          </label>
+
+          <p-inputgroup>
+            <p-inputgroup-addon>
+              <i class="pi pi-unlock"></i>
+            </p-inputgroup-addon>
+            <p-password
+              formControlName="password"
+              [invalid]="password?.invalid && password?.touched"
+              placeholder="Contraseña"
+              [toggleMask]="true"
+              inputStyleClass="w-full"
+            />
+          </p-inputgroup>
+          <!--
+          <p-inputgroup>
+             <p-inputgroup-addon>
+      <i class="pi pi-unlock"></i>
+    </p-inputgroup-addon>
+            <p-password
+              id="password"
+              formControlName="password"
+              [toggleMask]="true"
+              inputStyleClass="w-full"
+              placeholder="••••••••"
+              [ngClass]="{
+                'ng-invalid ng-dirty': password?.invalid && password?.touched,
+                'border-red-300': password?.invalid && password?.touched,
+              }"
+            ></p-password>
+          </p-inputgroup> -->
+
+          @if (password?.invalid && password?.touched) {
+            <small class="text-red-500 block mt-1">
+              @if (password?.errors?.['required']) {
+                <span>La contraseña es requerida</span>
+              }
+            </small>
+          }
+        </div>
+
+        <!-- Botón de submit con estado de carga -->
+        <p-button
+          type="submit"
+          [loading]="loading"
+          [disabled]="loginForm.invalid || loading"
+          styleClass="w-full py-3"
+          label="Iniciar Sesión"
+          icon="pi pi-sign-in"
+          iconPos="right"
+        ></p-button>
+      </form>
+    </p-card>
+  </div>
+</div>

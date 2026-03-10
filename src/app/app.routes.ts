@@ -12,6 +12,11 @@ export const routes: Routes = [
           import('./features/components/subject-itace/subject-itace').then((c) => c.SubjectItace),
       },
       {
+        path: 'tcp',
+        loadComponent: () =>
+          import('./features/components/tcp/tcp').then((c) => c.TCP),
+      },
+      {
         path: 'semester',
         loadComponent: () =>
           import('./features/components/semester/semester').then((c) => c.Semester),
@@ -31,5 +36,9 @@ export const routes: Routes = [
 
       { path: '', redirectTo: '/subject', pathMatch: 'full' }, // Ruta por defecto
     ],
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login').then((c) => c.Login),
   },
 ];

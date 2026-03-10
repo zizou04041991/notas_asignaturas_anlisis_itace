@@ -1,24 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, computed, inject, signal, ViewChild } from '@angular/core';
-import { SemesterService } from './services/semester_service';
 import { ColumnConfig, Table } from '../../../shared/components/table/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
-import { EditAddSemester } from './edit-add-semester/edit-add-semester';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, finalize } from 'rxjs';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { TcpService } from './services/tcp_service';
+import { EditAddTcp } from './edit-add-tcp/edit-add-tcp';
 
 @Component({
-  selector: 'app-semester',
+  selector: 'app-tcp',
   imports: [CommonModule, ConfirmDialogModule, Table, InputNumberModule],
-  templateUrl: './semester.html',
-  styleUrl: './semester.css',
+  templateUrl: './tcp.html',
+  styleUrl: './tcp.css',
   providers: [DialogService, ConfirmationService],
 })
-export class Semester {
-  private semesterService = inject(SemesterService);
+export class TCP {
+  private tcpService = inject(TcpService);
   toastrService = inject(ToastrService);
 
   @ViewChild(Table) tableComponent!: Table;
@@ -60,7 +60,7 @@ export class Semester {
       },
 
       accept: () => {
-        this.semesterService.deleteSemester(id).subscribe(
+        this.tcpService.deleteTcp(id).subscribe(
           (value) => {
             this.loadSemester();
           },
@@ -78,7 +78,7 @@ export class Semester {
   loadSemester() {
     this.loading.set(true);
 
-    this.semesterService.getSemesters().subscribe({
+    this.tcpService.getTcps().subscribe({
       next: (data) => {
         // Signals manejan automáticamente la detección de cambios
         this.semester.set(data);
@@ -92,7 +92,7 @@ export class Semester {
   }
   
   addSemester() {
-    this.ref = this.dialogService.open(EditAddSemester, {
+    this.ref = this.dialogService.open(EditAddTcp, {
       header: 'Adicionar Semester',
       modal: true,
       closable: true,
@@ -104,7 +104,7 @@ export class Semester {
 
     this.ref!.onClose.subscribe((formResponse: any) => {
       if (formResponse) {
-        this.semesterService.createSemester(formResponse).subscribe(
+        this.tcpService.createTcp(formResponse).subscribe(
           (value) => {
             this.loadSemester();
           },
@@ -115,7 +115,7 @@ export class Semester {
   }
 
   onEditSemester(data: { id: number; numero: number }) {
-    this.ref = this.dialogService.open(EditAddSemester, {
+    this.ref = this.dialogService.open(EditAddTcp, {
       header: 'Editar Asignatura',
       modal: true,
       closable: true,
@@ -128,7 +128,7 @@ export class Semester {
 
     this.ref!.onClose.subscribe((formResponse: any) => {
       if (formResponse) {
-        this.semesterService.updateSemester(data.id, formResponse).subscribe(
+        this.tcpService.updateTcp(data.id, formResponse).subscribe(
           (value) => {
             this.loadSemester();
           },

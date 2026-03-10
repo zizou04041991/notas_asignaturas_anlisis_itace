@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+/* Estilos personalizados para PrimeNG */
+::ng-deep .p-password {
+  width: 100%;
+}
+
+::ng-deep .p-password input {
+  width: 100%;
+  padding-left: 2.5rem;
+}
+
+::ng-deep .p-inputtext {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+}
+
+::ng-deep .p-input-icon-left {
+  width: 100%;
+}
+
+::ng-deep .p-input-icon-left i {
+  left: 1rem;
+  color: #6b7280;
+}
+
+::ng-deep .p-button {
+  font-weight: 600;
+}
+
+::ng-deep .p-button-outlined {
+  border-width: 2px;
+}
+
+::ng-deep .p-checkbox .p-checkbox-box {
+  border-width: 2px;
+}
+
+/* Estilos para estados de error */
+::ng-deep .ng-invalid.ng-dirty .p-inputtext {
+  border-color: #ef4444;
+}
+
+::ng-deep .ng-invalid.ng-dirty .p-inputtext:enabled:focus {
+  box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.2);
+}
+
+/* Animaciones */
+.p-card {
+  transition: transform 0.3s ease;
+}
+
+.p-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  ::ng-deep .p-card {
+    margin: 0;
+    border-radius: 1rem;
+  }
+}

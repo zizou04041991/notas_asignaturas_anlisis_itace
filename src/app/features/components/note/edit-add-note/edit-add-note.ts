@@ -2,12 +2,12 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogService, DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { SemesterService } from '../../semester/services/semester_service';
 import { SelectModule } from 'primeng/select';
 import { SubjectItaceService } from '../../subject-itace/services/subject_itace_service';
 import { StudentService } from '../../student/services/student_service';
 import { forkJoin, map } from 'rxjs';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { TcpService } from '../../tcp/services/tcp_service';
 
 @Component({
   selector: 'app-edit-add-note',
@@ -20,9 +20,11 @@ export class EditAddNote implements OnInit {
   formNote!: FormGroup;
   submitted = false;
   SUBJECTS: { id: number; numero: number }[] = [];
+  TCPS: { id: number; numero: number }[] = [];
   STUDENTS: { id: number; nombre_completo: string }[] = [];
   subjectItaceService = inject(SubjectItaceService);
   studentService = inject(StudentService);
+  tcpService = inject(TcpService);
   cd = inject(ChangeDetectorRef);
   loading = false;
 
@@ -43,6 +45,7 @@ export class EditAddNote implements OnInit {
         Validators.required,
       ),
       nota: new FormControl(this.config?.data ? this.config?.data?.nota : '', Validators.required),
+      tcp_id: new FormControl(this.config?.data ? this.config?.data?.tcp.id : '', Validators.required),
     });
   }
 
@@ -52,11 +55,13 @@ export class EditAddNote implements OnInit {
     forkJoin({
       students: this.studentService.getStudents(),
       subjects: this.subjectItaceService.getSubjectItaces(),
+      tcps: this.tcpService.getTcps()
     })
       .pipe(
-        map(({ students, subjects }) => {
+        map(({ students, subjects,tcps }) => {
           this.STUDENTS = students;
           this.SUBJECTS = subjects;
+          this.TCPS = tcps;
           this.loading = false;
           this.cd.detectChanges();
           return {

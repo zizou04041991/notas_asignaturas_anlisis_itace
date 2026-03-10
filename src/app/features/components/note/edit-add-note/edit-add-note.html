@@ -71,25 +71,7 @@
       <label class="block text-xs font-medium text-gray-600 mb-1">
         Nota <span class="text-red-500">*</span>
       </label>
-      <!--
-      <input
-        type="number"
-        placeholder="Nota"
-        formControlName="nota"
-        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
-        [class.border-red-400]="campoInvalido('nota')"
-        [class.bg-red-50]="campoInvalido('nota')"
-        [class.border-gray-300]="!campoInvalido('nota')"
-      /> -->
-      <!--
-      <p-inputnumber
-        formControlName="nota"
-        class="w-full"
-        [invalid]="campoInvalido('nota')"
-        mode="decimal"
-        inputId="withoutgrouping"
-        [useGrouping]="false"
-      />-->
+  
       <p-inputnumber
         formControlName="nota"
         class="w-full"
@@ -110,6 +92,40 @@
         </div>
       }
     </div>
+
+
+        <!-- Campo tcp -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        TCP <span class="text-red-500">*</span>
+      </label>
+      <p-select
+        [options]="TCPS"
+        formControlName="tcp_id"
+        class="w-full transition duration-150"
+        placeholder="Seleccione TCP"
+        optionLabel="numero"
+        optionValue="id"
+        [invalid]="campoInvalido('tcp_id')"
+        [virtualScroll]="true"
+        [virtualScrollItemSize]="5"
+        [filter]="true"
+        filterBy="numero"
+        [loading]="loading"
+      />
+
+      @if (campoInvalido('tcp_id')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formNote.get('tcp_id')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El estudiante es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
 
     <!-- Botones -->
     <div class="col-span-1 md:col-span-2 mt-2">

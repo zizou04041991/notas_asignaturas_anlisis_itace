@@ -5,6 +5,7 @@ import {
   faUsers,
   faChartBar,
   faChartLine,
+  faFileLines,
 } from '@fortawesome/free-solid-svg-icons';
 
 export interface RutaConfig {
@@ -20,6 +21,11 @@ export const RUTAS_CONFIG: RutaConfig[] = [
     titulo: 'Semestres',
     icono: faLayerGroup,
     exact: true,
+  },
+  {
+    path: '/tcp',
+    titulo: 'TCP',
+    icono: faFileLines
   },
   {
     path: '/subject',

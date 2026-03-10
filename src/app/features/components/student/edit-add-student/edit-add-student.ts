@@ -4,10 +4,11 @@ import { ButtonModule } from 'primeng/button';
 import { DialogService, DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { SemesterService } from '../../semester/services/semester_service';
 import { SelectModule } from 'primeng/select';
+import { KeyFilterModule } from 'primeng/keyfilter';
 
 @Component({
   selector: 'app-edit-add-student',
-  imports: [ReactiveFormsModule, ButtonModule, SelectModule],
+  imports: [ReactiveFormsModule, ButtonModule, SelectModule, KeyFilterModule],
   templateUrl: './edit-add-student.html',
   styleUrl: './edit-add-student.css',
   providers: [DialogService],
