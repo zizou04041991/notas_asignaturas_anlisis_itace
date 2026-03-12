@@ -7,6 +7,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { EditAddStudent } from './edit-add-student/edit-add-student';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-student',
@@ -63,6 +64,8 @@ export class Student {
   students = signal<StudentInterface[]>([]);
   loading = signal<boolean>(false);
   totalRecords = computed(() => this.students().length);
+  cd = inject(ChangeDetectorRef);
+  toastService = inject(ToastService);
 
   confirm(id: number) {
     this.confirmationService.confirm({
@@ -85,22 +88,31 @@ export class Student {
           (value) => {
             this.loadStudents();
           },
-          (error) => {},
+          (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       },
       reject: () => {},
     });
   }
 
-  constructor(public cd: ChangeDetectorRef) {}
+
 
   ngOnInit() {
-    this.loadStudents();
+    this.loadStudents(true);
   }
 
-  loadStudents(params?: any) {
+  loadStudents(initial: boolean = false) {
     this.loading.set(true);
-    this.studentService.getStudents(params).subscribe({
+    this.studentService.getStudents().subscribe({
       next: (data) => {
         this.students.set(
           data.map((student: any) => ({
@@ -108,11 +120,18 @@ export class Student {
             semestre_numero: student.semestre_actual?.numero,
           })),
         );
-
+        if(!initial) this.toastService.showSuccessToastGeneric();
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error cargando estudiantes:', error);
+        if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
         this.loading.set(false);
       },
     });
@@ -135,7 +154,16 @@ export class Student {
           (value) => {
             this.loadStudents();
           },
-          (error) => {},
+          (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       }
     });
@@ -159,7 +187,16 @@ export class Student {
           (value) => {
             this.loadStudents();
           },
-          (error) => {},
+          (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       }
     });

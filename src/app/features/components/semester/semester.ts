@@ -6,9 +6,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { EditAddSemester } from './edit-add-semester/edit-add-semester';
-import { ToastrService } from 'ngx-toastr';
-import { BehaviorSubject, finalize } from 'rxjs';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-semester',
@@ -19,7 +18,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 })
 export class Semester {
   private semesterService = inject(SemesterService);
-  toastrService = inject(ToastrService);
+  toastService = inject(ToastService);
 
   @ViewChild(Table) tableComponent!: Table;
 
@@ -64,7 +63,16 @@ export class Semester {
           (value) => {
             this.loadSemester();
           },
-          (error) => {},
+          (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       },
       reject: () => {},
@@ -72,10 +80,10 @@ export class Semester {
   }
 
   ngOnInit() {
-    this.loadSemester();
+    this.loadSemester(true);
   }
 
-  loadSemester() {
+  loadSemester(initial: boolean = false) {
     this.loading.set(true);
 
     this.semesterService.getSemesters().subscribe({
@@ -83,10 +91,18 @@ export class Semester {
         // Signals manejan automáticamente la detección de cambios
         this.semester.set(data);
         this.loading.set(false);
+        if(!initial) this.toastService.showSuccessToastGeneric();
       },
       error: (error) => {
         this.loading.set(false);
-        this.toastrService.error('Error al cargar los semestres');
+        if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
       },
     });
   }
@@ -108,7 +124,16 @@ export class Semester {
           (value) => {
             this.loadSemester();
           },
-          (error) => {},
+          (error) => {
+            if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       }
     });
@@ -116,7 +141,7 @@ export class Semester {
 
   onEditSemester(data: { id: number; numero: number }) {
     this.ref = this.dialogService.open(EditAddSemester, {
-      header: 'Editar Asignatura',
+      header: 'Editar Semestre',
       modal: true,
       closable: true,
       focusOnShow: false,
@@ -132,7 +157,16 @@ export class Semester {
           (value) => {
             this.loadSemester();
           },
-          (error) => {},
+          (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       }
     });

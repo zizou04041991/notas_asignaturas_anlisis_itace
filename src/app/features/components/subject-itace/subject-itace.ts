@@ -10,7 +10,8 @@ import { EditAddSubject } from './edit-add-subject/edit-add-subject';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/services/toast.service';
+
 
 @Component({
   selector: 'app-subject-itace',
@@ -31,7 +32,7 @@ export class SubjectItace {
   subjectiTaces!: SubjectItaceInterface[];
   loading: boolean = false;
   ref: DynamicDialogRef | undefined;
-  toastrService = inject(ToastrService);
+  toastService = inject(ToastService);
 
   private confirmationService = inject(ConfirmationService);
 
@@ -57,6 +58,14 @@ export class SubjectItace {
             this.loadSubject();
           },
           (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
           },
         );
       },
@@ -69,19 +78,28 @@ export class SubjectItace {
   ) {}
 
   ngOnInit() {
-    this.loadSubject();
+    this.loadSubject(true);
   }
 
-  loadSubject() {
+  loadSubject(initial: boolean = false) {
     this.loading = true;
     this.subjectItaceService.getSubjectItaces().subscribe(
       (data) => {
         this.subjectiTaces = data;
         this.loading = false;
         this.cd.detectChanges();
+        if(!initial) this.toastService.showSuccessToastGeneric();
       },
       (error) => {
         this.loading = false;
+         if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
       },
     );
   }
@@ -105,6 +123,14 @@ export class SubjectItace {
             this.loadSubject();
           },
           (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
           },
         );
       }
@@ -128,11 +154,19 @@ export class SubjectItace {
     this.ref!.onClose.subscribe((formResponse: any) => {
       if (formResponse) {
         this.subjectItaceService.createSubjectItace(formResponse).subscribe(
-          (value) => {
-        this.toastrService.success('bien', 'el texto');
+          () => {
+       
             this.loadSubject();
           },
           (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
           },
         );
       }

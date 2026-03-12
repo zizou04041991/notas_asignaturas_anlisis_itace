@@ -4,11 +4,11 @@ import { ColumnConfig, Table } from '../../../shared/components/table/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
-import { ToastrService } from 'ngx-toastr';
-import { BehaviorSubject, finalize } from 'rxjs';
+
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TcpService } from './services/tcp_service';
 import { EditAddTcp } from './edit-add-tcp/edit-add-tcp';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-tcp',
@@ -19,7 +19,7 @@ import { EditAddTcp } from './edit-add-tcp/edit-add-tcp';
 })
 export class TCP {
   private tcpService = inject(TcpService);
-  toastrService = inject(ToastrService);
+ toastService = inject(ToastService);
 
   @ViewChild(Table) tableComponent!: Table;
 
@@ -62,9 +62,18 @@ export class TCP {
       accept: () => {
         this.tcpService.deleteTcp(id).subscribe(
           (value) => {
-            this.loadSemester();
+            this.loadTcp();
           },
-          (error) => {},
+          (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       },
       reject: () => {},
@@ -72,10 +81,10 @@ export class TCP {
   }
 
   ngOnInit() {
-    this.loadSemester();
+    this.loadTcp(true);
   }
 
-  loadSemester() {
+  loadTcp(initial: boolean = false) {
     this.loading.set(true);
 
     this.tcpService.getTcps().subscribe({
@@ -83,10 +92,18 @@ export class TCP {
         // Signals manejan automáticamente la detección de cambios
         this.semester.set(data);
         this.loading.set(false);
+        if(!initial) this.toastService.showSuccessToastGeneric();
       },
       error: (error) => {
         this.loading.set(false);
-        this.toastrService.error('Error al cargar los semestres');
+         if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
       },
     });
   }
@@ -106,9 +123,19 @@ export class TCP {
       if (formResponse) {
         this.tcpService.createTcp(formResponse).subscribe(
           (value) => {
-            this.loadSemester();
+            this.loadTcp();
           },
-          (error) => {},
+          (error) => {
+            console.log('add',error);
+             if (error?.error.hasOwnProperty('error')) { 
+              
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       }
     });
@@ -130,9 +157,18 @@ export class TCP {
       if (formResponse) {
         this.tcpService.updateTcp(data.id, formResponse).subscribe(
           (value) => {
-            this.loadSemester();
+            this.loadTcp();
           },
-          (error) => {},
+          (error) => {
+             if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
+          },
         );
       }
     });

@@ -1,3 +1,9 @@
-<div class="card">
-  <p-chart type="bar" [data]="basicData" [options]="basicOptions" />
-</div>
+@if (countData) {
+  <div class="card">
+    <p-chart type="bar" [data]="basicData" [options]="basicOptions" />
+  </div>
+} @else {
+  <div class="card">
+    <p-message>No tiene notas aún el sistema</p-message>
+  </div>
+}

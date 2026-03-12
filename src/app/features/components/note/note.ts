@@ -8,6 +8,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { EditAddNote } from './edit-add-note/edit-add-note';
 import { SelectModule } from 'primeng/select';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-note',
@@ -57,7 +58,7 @@ export class Note {
     },
     {
       field: 'nota',
-      header: 'Nota',
+      header: 'Calificaciones',
       width: '25%',
       sortable: true,
       filterable: true,
@@ -72,7 +73,9 @@ export class Note {
   notes = signal<NoteInterface[]>([]);
   loading = signal<boolean>(false);
   totalRecords = computed(() => this.notes().length);
-  loadNotes() {
+    toastService = inject(ToastService);
+
+  loadNotes(initial: boolean = false) {
     this.loading.set(true);
     this.noteService.getNotes().subscribe(
       (data) => {
@@ -84,11 +87,21 @@ export class Note {
             semestre_cursado_numero: note.semestre_cursado.numero,
             tcp_numero: note.tcp.numero
           })),
+          //
         );
+        if(!initial) this.toastService.showSuccessToastGeneric();
         this.loading.set(false);
       },
       (error) => {
         this.loading.set(false);
+         if (error?.error.hasOwnProperty('error')) { 
+              console.log()
+              this.toastService.showErrorToast(error.error.error);
+            }
+            else{
+              this.toastService.showErrorToastGeneric();
+            }
+
       },
     );
   }
@@ -122,7 +135,7 @@ export class Note {
   }
 
   ngOnInit() {
-    this.loadNotes();
+    this.loadNotes(true);
   }
 
   onDeleteNote(event: any) {
@@ -130,7 +143,7 @@ export class Note {
   }
   addNote() {
     this.ref = this.dialogService.open(EditAddNote, {
-      header: 'Adicionar Notas',
+      header: 'Adicionar Calificación',
       modal: true,
       closable: true,
       focusOnShow: false,
@@ -153,7 +166,7 @@ export class Note {
 
   onEditNote(data: { id: number; numero: number }) {
     this.ref = this.dialogService.open(EditAddNote, {
-      header: 'Editar Notas',
+      header: 'Editar Calificación',
       modal: true,
       closable: true,
       focusOnShow: false,

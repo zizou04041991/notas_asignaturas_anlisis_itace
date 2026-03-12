@@ -39,12 +39,12 @@ export const RUTAS_CONFIG: RutaConfig[] = [
   },
   {
     path: '/note',
-    titulo: 'Notas',
+    titulo: 'Calificaciones',
     icono: faChartBar,
   },
   {
     path: '/graphic',
-    titulo: 'Gráfica Notas',
+    titulo: 'Gráfica Calificaciones',
     icono: faChartLine,
   },
 ];

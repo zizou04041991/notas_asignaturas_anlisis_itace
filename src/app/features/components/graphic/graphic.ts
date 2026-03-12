@@ -4,10 +4,11 @@ import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angu
 import { ChartModule } from 'primeng/chart';
 import { NoteService } from '../note/services/note_service';
 import { NoteInterface } from '../note/interface/note_interface';
+import { MessageModule } from 'primeng/message';
 
 @Component({
   selector: 'app-graphic',
-  imports: [ChartModule],
+  imports: [ChartModule, MessageModule],
   templateUrl: './graphic.html',
   styleUrl: './graphic.css',
 })
@@ -18,6 +19,7 @@ export class Graphic implements OnInit {
   basicOptions: any;
 
   platformId = inject(PLATFORM_ID);
+  countData: number = 0;
 
   // configService = inject(AppConfigService);
 
@@ -34,6 +36,7 @@ export class Graphic implements OnInit {
   ngOnInit() {
     this.subjectItaceService.getNotes().subscribe((value) => {
       if (value.length) {
+        this.countData = value.length;
         const result = this.calcularResumenSimple(value);
         const label = result.map((item) => item.nombre);
         const backgroundColor = result.map((item) => item.color);
@@ -88,7 +91,7 @@ export class Graphic implements OnInit {
         //['Matemática', 'Física', 'Química', 'Biología'],
         datasets: [
           {
-            label: 'Notas',
+            label: 'calificaciones',
             data,
             //: [540, 325, 702, 620],
             backgroundColor,
