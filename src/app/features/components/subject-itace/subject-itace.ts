@@ -12,7 +12,6 @@ import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastService } from '../../../shared/services/toast.service';
 
-
 @Component({
   selector: 'app-subject-itace',
   imports: [
@@ -58,14 +57,14 @@ export class SubjectItace {
             this.loadSubject();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       },
@@ -88,18 +87,18 @@ export class SubjectItace {
         this.subjectiTaces = data;
         this.loading = false;
         this.cd.detectChanges();
-        if(!initial) this.toastService.showSuccessToastGeneric();
+        if (!initial) this.toastService.showSuccessToastGeneric();
       },
       (error) => {
         this.loading = false;
-         if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
-            }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
+        if (error.status !== 0 && error.status !== 401) {
+          if (error?.error.hasOwnProperty('error')) {
+            console.log();
+            this.toastService.showErrorToast(error.error.error);
+          } else {
+            this.toastService.showErrorToastGeneric();
+          }
+        }
       },
     );
   }
@@ -123,14 +122,14 @@ export class SubjectItace {
             this.loadSubject();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       }
@@ -155,18 +154,17 @@ export class SubjectItace {
       if (formResponse) {
         this.subjectItaceService.createSubjectItace(formResponse).subscribe(
           () => {
-       
             this.loadSubject();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       }

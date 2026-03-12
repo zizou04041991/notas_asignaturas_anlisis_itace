@@ -73,7 +73,7 @@ export class Note {
   notes = signal<NoteInterface[]>([]);
   loading = signal<boolean>(false);
   totalRecords = computed(() => this.notes().length);
-    toastService = inject(ToastService);
+  toastService = inject(ToastService);
 
   loadNotes(initial: boolean = false) {
     this.loading.set(true);
@@ -85,23 +85,23 @@ export class Note {
             estudiante_nombre_completo: note.estudiante?.nombre_completo,
             asignatura_nombre: note.asignatura.nombre,
             semestre_cursado_numero: note.semestre_cursado.numero,
-            tcp_numero: note.tcp.numero
+            tcp_numero: note.tcp.numero,
           })),
           //
         );
-        if(!initial) this.toastService.showSuccessToastGeneric();
+        if (!initial) this.toastService.showSuccessToastGeneric();
         this.loading.set(false);
       },
       (error) => {
         this.loading.set(false);
-         if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
-            }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
+        if (error.status !== 0 && error.status !== 401) {
+          if (error?.error.hasOwnProperty('error')) {
+            console.log();
+            this.toastService.showErrorToast(error.error.error);
+          } else {
+            this.toastService.showErrorToastGeneric();
+          }
+        }
       },
     );
   }
@@ -158,7 +158,16 @@ export class Note {
           (value) => {
             this.loadNotes();
           },
-          (error) => {},
+          (error) => {
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
+            }
+          },
         );
       }
     });
@@ -182,7 +191,16 @@ export class Note {
           (value) => {
             this.loadNotes();
           },
-          (error) => {},
+          (error) => {
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
+            }
+          },
         );
       }
     });

@@ -64,14 +64,14 @@ export class Semester {
             this.loadSemester();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       },
@@ -91,22 +91,22 @@ export class Semester {
         // Signals manejan automáticamente la detección de cambios
         this.semester.set(data);
         this.loading.set(false);
-        if(!initial) this.toastService.showSuccessToastGeneric();
+        if (!initial) this.toastService.showSuccessToastGeneric();
       },
       error: (error) => {
         this.loading.set(false);
-        if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
-            }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
+        if (error.status !== 0 && error.status !== 401) {
+          if (error?.error.hasOwnProperty('error')) {
+            console.log();
+            this.toastService.showErrorToast(error.error.error);
+          } else {
+            this.toastService.showErrorToastGeneric();
+          }
+        }
       },
     });
   }
-  
+
   addSemester() {
     this.ref = this.dialogService.open(EditAddSemester, {
       header: 'Adicionar Semester',
@@ -125,14 +125,14 @@ export class Semester {
             this.loadSemester();
           },
           (error) => {
-            if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       }
@@ -158,14 +158,14 @@ export class Semester {
             this.loadSemester();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       }

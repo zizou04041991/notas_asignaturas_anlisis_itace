@@ -89,22 +89,20 @@ export class Student {
             this.loadStudents();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       },
       reject: () => {},
     });
   }
-
-
 
   ngOnInit() {
     this.loadStudents(true);
@@ -120,18 +118,18 @@ export class Student {
             semestre_numero: student.semestre_actual?.numero,
           })),
         );
-        if(!initial) this.toastService.showSuccessToastGeneric();
+        if (!initial) this.toastService.showSuccessToastGeneric();
         this.loading.set(false);
       },
       error: (error) => {
-        if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
-            }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
+        if (error.status !== 0 && error.status !== 401) {
+          if (error?.error.hasOwnProperty('error')) {
+            console.log();
+            this.toastService.showErrorToast(error.error.error);
+          } else {
+            this.toastService.showErrorToastGeneric();
+          }
+        }
         this.loading.set(false);
       },
     });
@@ -155,14 +153,14 @@ export class Student {
             this.loadStudents();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       }
@@ -188,14 +186,14 @@ export class Student {
             this.loadStudents();
           },
           (error) => {
-             if (error?.error.hasOwnProperty('error')) { 
-              console.log()
-              this.toastService.showErrorToast(error.error.error);
+            if (error.status !== 0 && error.status !== 401) {
+              if (error?.error.hasOwnProperty('error')) {
+                console.log();
+                this.toastService.showErrorToast(error.error.error);
+              } else {
+                this.toastService.showErrorToastGeneric();
+              }
             }
-            else{
-              this.toastService.showErrorToastGeneric();
-            }
-
           },
         );
       }
