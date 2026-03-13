@@ -44,7 +44,7 @@ export class EditAddNote implements OnInit {
         this.config?.data ? this.config?.data?.asignatura?.id : '',
         Validators.required,
       ),
-      nota: new FormControl(this.config?.data ? this.config?.data?.nota : '', Validators.required),
+      nota: new FormControl(this.config?.data ? this.config?.data?.nota : '', [Validators.required, Validators.min(1)]),
       tcp_id: new FormControl(this.config?.data ? this.config?.data?.tcp.id : '', Validators.required),
     });
   }

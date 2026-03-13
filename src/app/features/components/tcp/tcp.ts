@@ -27,7 +27,7 @@ export class TCP {
   columns: ColumnConfig[] = [
     {
       field: 'numero',
-      header: 'Semestre',
+      header: 'TCP',
       width: '25%',
       sortable: true,
       filterable: true,

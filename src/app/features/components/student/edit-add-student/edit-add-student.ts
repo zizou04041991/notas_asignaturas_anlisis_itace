@@ -39,6 +39,10 @@ export class EditAddStudent implements OnInit {
         this.config?.data ? this.config?.data?.semestre_actual?.id : '',
         Validators.required,
       ),
+      numero_control: new FormControl(
+        this.config?.data ? this.config?.data?.numero_control : '',
+        Validators.required,
+      ),
     });
   }
 

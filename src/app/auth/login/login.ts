@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { PasswordModule } from 'primeng/password';
@@ -10,12 +10,19 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputTextModule } from 'primeng/inputtext';
 
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { 
+  faGraduationCap
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
   imports: [
+    FormsModule,
+    FontAwesomeModule,
     ReactiveFormsModule,
     CommonModule,
     InputGroupModule,
@@ -28,24 +35,33 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
   ],
 })
 export class Login {
-  loginForm: FormGroup;
-  loading: boolean = false;
+  faGraduationCap = faGraduationCap;
+  
+  loginData = {
+    numeroControl: '',
+    password: ''
+  };
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-  ) {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]],
-    });
-  }
+  loading = false;
+  errorMessage = '';
+  year = new Date().getFullYear();
 
-  // Getters para facilitar el acceso en el template
-  get username() {
-    return this.loginForm.get('username');
-  }
-  get password() {
-    return this.loginForm.get('password');
+  constructor(private router: Router) {}
+
+  onLogin() {
+    this.errorMessage = '';
+    this.loading = true;
+
+    // Simulación de login - aquí iría tu lógica real
+    setTimeout(() => {
+      if (this.loginData.numeroControl === 'admin' && this.loginData.password === 'admin') {
+        // Login exitoso
+        this.router.navigate(['/dashboard']);
+      } else {
+        // Login fallido
+        this.errorMessage = 'Número de control o contraseña incorrectos';
+        this.loading = false;
+      }
+    }, 1500);
   }
 }

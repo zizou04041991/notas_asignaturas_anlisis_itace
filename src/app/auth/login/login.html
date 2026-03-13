@@ -1,104 +1,125 @@
-<div
-  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4"
->
-  <!-- Contenedor principal -->
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+  <!-- Contenedor principal con efecto de tarjeta -->
   <div class="w-full max-w-md">
-    <!-- Tarjeta de login -->
-    <p-card class="shadow-2xl">
-      <div class="text-center mb-8">
-        <!-- Logo o icono -->
-        <div class="flex justify-center mb-4">
-          <div class="bg-indigo-600 p-4 rounded-full">
-            <i class="pi pi-shield text-4xl text-white"></i>
+    <!-- Efecto de sombra y borde sutil -->
+    <div class="relative">
+      <!-- Decoración superior con gradiente -->
+      <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] rounded-full"></div>
+      
+      <!-- Tarjeta principal -->
+      <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+        
+        <!-- Logo y título -->
+        <div class="text-center mb-8">
+          <!-- Contenedor del logo con fondo decorativo -->
+          <div class="relative inline-block">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] rounded-full blur-lg opacity-20"></div>
+            <div class="relative w-20 h-20 mx-auto bg-gradient-to-br from-[#B3294B] to-[#8A1F3A] rounded-2xl rotate-45 flex items-center justify-center shadow-lg">
+              <fa-icon [icon]="faGraduationCap" class="text-white text-3xl -rotate-45"></fa-icon>
+            </div>
           </div>
+          
+          <h2 class="text-2xl font-bold text-gray-800 mt-4">Bienvenido</h2>
+          <p class="text-gray-500 text-sm mt-1">Inicia sesión en tu cuenta</p>
         </div>
+
+        <!-- Formulario -->
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="space-y-6">
+          <!-- Campo Número de Control -->
+          <div class="space-y-2">
+            <label for="numeroControl" class="block text-sm font-medium text-gray-700">
+              Número de Control
+            </label>
+            <div class="relative">
+              <i class="pi pi-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
+              <input
+                id="numeroControl"
+                name="numeroControl"
+                type="text"
+                pInputText
+                [(ngModel)]="loginData.numeroControl"
+                required
+                #numeroControl="ngModel"
+                class="w-full pl-10 p-3 border-2 border-gray-200 rounded-xl focus:border-[#B3294B] focus:ring-2 focus:ring-[#B3294B]/20 transition-all duration-200"
+                [class.ng-invalid]="numeroControl.invalid && numeroControl.touched"
+                placeholder="Ingresa tu número de control"
+              />
+            </div>
+            @if (numeroControl.invalid && numeroControl.touched) {
+              <small class="text-red-500 text-xs flex items-center gap-1 mt-1">
+                <i class="pi pi-exclamation-circle"></i>
+                El número de control es requerido
+              </small>
+            }
+          </div>
+
+          <!-- Campo Contraseña -->
+          <div class="space-y-2">
+            <label for="password" class="block text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
+            <div class="relative">
+              <i class="pi pi-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
+              <p-password
+                id="password"
+                name="password"
+                [(ngModel)]="loginData.password"
+                required
+                #password="ngModel"
+                [toggleMask]="true"
+                [feedback]="false"
+                inputStyleClass="w-full pl-10 p-3 border-2 border-gray-200 rounded-xl focus:border-[#B3294B] focus:ring-2 focus:ring-[#B3294B]/20 transition-all duration-200"
+                styleClass="w-full"
+                placeholder="Ingresa tu contraseña"
+                [inputStyle]="{'width': '100%'}"
+              ></p-password>
+            </div>
+            @if (password.invalid && password.touched) {
+              <small class="text-red-500 text-xs flex items-center gap-1 mt-1">
+                <i class="pi pi-exclamation-circle"></i>
+                La contraseña es requerida
+              </small>
+            }
+          </div>
+
+          <!-- Mensaje de error general -->
+          @if (errorMessage) {
+            <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-lg">
+              <p class="text-red-700 text-sm flex items-center gap-2">
+                <i class="pi pi-exclamation-triangle"></i>
+                {{ errorMessage }}
+              </p>
+            </div>
+          }
+
+          <!-- Botón de inicio de sesión -->
+          <button
+            type="submit"
+            [disabled]="loginForm.invalid || loading"
+            class="w-full py-3 px-4 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] text-white font-medium rounded-xl shadow-lg shadow-[#B3294B]/30 hover:shadow-xl hover:shadow-[#B3294B]/40 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg flex items-center justify-center gap-2"
+          >
+            @if (loading) {
+              <i class="pi pi-spin pi-spinner"></i>
+            }
+            <span>{{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}</span>
+          </button>
+
+          <!-- Línea decorativa -->
+          <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white text-gray-400">Sistema Académico ITACE</span>
+            </div>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- Formulario -->
-      <form [formGroup]="loginForm" class="space-y-5">
-        <!-- Campo username -->
-        <div class="field">
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-            Usuario
-          </label>
-
-          <p-inputgroup>
-            <p-inputgroup-addon>
-              <i class="pi pi-user"></i>
-            </p-inputgroup-addon>
-            <input
-              pInputText
-              formControlName="username"
-              placeholder="Username"
-              [invalid]="username?.invalid && username?.touched"
-            />
-          </p-inputgroup>
-
-          @if (username?.invalid && username?.touched) {
-            <small class="text-red-500 block mt-1">
-              @if (username?.errors?.['required']) {
-                <span>El usuario es requerido</span>
-              }
-            </small>
-          }
-        </div>
-
-        <!-- Campo Contraseña -->
-        <div class="field">
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-            Contraseña
-          </label>
-
-          <p-inputgroup>
-            <p-inputgroup-addon>
-              <i class="pi pi-unlock"></i>
-            </p-inputgroup-addon>
-            <p-password
-              formControlName="password"
-              [invalid]="password?.invalid && password?.touched"
-              placeholder="Contraseña"
-              [toggleMask]="true"
-              inputStyleClass="w-full"
-            />
-          </p-inputgroup>
-          <!--
-          <p-inputgroup>
-             <p-inputgroup-addon>
-      <i class="pi pi-unlock"></i>
-    </p-inputgroup-addon>
-            <p-password
-              id="password"
-              formControlName="password"
-              [toggleMask]="true"
-              inputStyleClass="w-full"
-              placeholder="••••••••"
-              [ngClass]="{
-                'ng-invalid ng-dirty': password?.invalid && password?.touched,
-                'border-red-300': password?.invalid && password?.touched,
-              }"
-            ></p-password>
-          </p-inputgroup> -->
-
-          @if (password?.invalid && password?.touched) {
-            <small class="text-red-500 block mt-1">
-              @if (password?.errors?.['required']) {
-                <span>La contraseña es requerida</span>
-              }
-            </small>
-          }
-        </div>
-
-        <!-- Botón de submit con estado de carga -->
-        <p-button
-          type="submit"
-          [loading]="loading"
-          [disabled]="loginForm.invalid || loading"
-          styleClass="w-full py-3"
-          label="Iniciar Sesión"
-          icon="pi pi-sign-in"
-          iconPos="right"
-        ></p-button>
-      </form>
-    </p-card>
+    <!-- Footer con año -->
+    <p class="text-center text-gray-400 text-xs mt-6">
+      © {{ year }} ITACE - Todos los derechos reservados
+    </p>
   </div>
 </div>

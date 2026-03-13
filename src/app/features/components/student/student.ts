@@ -57,6 +57,14 @@ export class Student {
       filterable: true,
       //type: 'custom', // Personalizado para mostrar el número del semestre
     },
+     {
+      field: 'numero_control',
+      header: 'Número Control',
+      width: '25%',
+      sortable: true,
+      filterable: true,
+      //type: 'custom', // Personalizado para mostrar el número del semestre
+    },
   ];
 
   private confirmationService = inject(ConfirmationService);

@@ -124,6 +124,32 @@
       }
     </div>
 
+     <!-- Campo numero_control -->
+    <div class="col-span-1">
+      <label class="block text-xs font-medium text-gray-600 mb-1">
+        numero_control <span class="text-red-500">*</span>
+      </label>
+      <input pInputText id="alphanumeric" pKeyFilter="alphanum"
+        placeholder="numero_control"
+        formControlName="numero_control"
+        class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
+        [class.border-red-400]="campoInvalido('numero_control')"
+        [class.bg-red-50]="campoInvalido('numero_control')"
+        [class.border-gray-300]="!campoInvalido('numero_control')"
+      />
+
+      @if (campoInvalido('numero_control')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formStudent.get('numero_control')?.errors?.['required']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El número control es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
     <!-- Botones -->
     <div class="col-span-1 md:col-span-2 mt-2">
       <div class="flex justify-between items-center border-t border-gray-100 pt-4">
