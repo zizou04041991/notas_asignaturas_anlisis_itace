@@ -59,9 +59,10 @@ export class EditAddNote implements OnInit {
     })
       .pipe(
         map(({ students, subjects,tcps }) => {
-          this.STUDENTS = students;
-          this.SUBJECTS = subjects;
-          this.TCPS = tcps;
+          console.log('sub', subjects);
+          this.STUDENTS = students.results;
+          this.SUBJECTS = subjects.results;
+          this.TCPS = tcps.results;
           this.loading = false;
           this.cd.detectChanges();
           return {
@@ -72,6 +73,7 @@ export class EditAddNote implements OnInit {
       )
       .subscribe({
         next: (report) => {
+          this.loading = false;
         },
         error: (err) => {
           this.loading = false;

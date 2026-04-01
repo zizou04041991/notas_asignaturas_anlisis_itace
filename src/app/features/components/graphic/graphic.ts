@@ -35,9 +35,9 @@ export class Graphic implements OnInit {
 
   ngOnInit() {
     this.subjectItaceService.getNotes().subscribe((value) => {
-      if (value.length) {
-        this.countData = value.length;
-        const result = this.calcularResumenSimple(value);
+      if (value.total) {
+        this.countData = value.total;
+        const result = this.calcularResumenSimple(value.results);
         const label = result.map((item) => item.nombre);
         const backgroundColor = result.map((item) => item.color);
         const data = result.map((item) => item.promedio as any);

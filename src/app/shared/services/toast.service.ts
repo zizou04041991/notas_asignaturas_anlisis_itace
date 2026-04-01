@@ -47,7 +47,7 @@ export class ToastService {
       summary: summary,
       detail: detail,
       life: 2000,
-      //sticky: this.STICKY
+      //sticky: true
       //
     });
   }

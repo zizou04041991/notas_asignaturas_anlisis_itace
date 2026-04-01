@@ -13,8 +13,9 @@ export class NoteService {
   constructor(private http: HttpClient) {}
 
   // Read (GET) - Get all users
-  getNotes(): Observable<NoteInterface[]> {
-    return this.http.get<NoteInterface[]>(this.apiUrl);
+  getNotes(params: string = ''): Observable<any> {
+    if (params === '') return this.http.get<any>(this.apiUrl);
+    return this.http.get<any>(this.apiUrl + params);
   }
 
   // Read (GET) - Get a single user by ID

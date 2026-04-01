@@ -1,0 +1,101 @@
+/* reusable-table.component.css */
+.reusable-table-container {
+  width: 100%;
+}
+
+:host ::ng-deep {
+  .p-datatable .p-datatable-thead > tr > th {
+    background-color: #f9fafb;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.75rem 1rem;
+  }
+
+  .actions-column {
+    white-space: nowrap;
+    width: 120px;
+  }
+
+  .actions-column .flex {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .p-column-filter {
+    width: 100%;
+  }
+
+  .p-column-filter .p-inputtext {
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  /* Estilos para hover en filas */
+  .p-datatable .p-datatable-tbody > tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  /* Estilos para el mensaje de tabla vacía */
+  .p-datatable .p-datatable-tbody > tr > td .text-center {
+    color: #6c757d;
+    font-style: italic;
+  }
+
+  /* Ajustes responsive */
+  @media (max-width: 768px) {
+    .p-datatable {
+      font-size: 0.875rem;
+    }
+    
+    .p-button.p-button-sm {
+      width: 2rem;
+      height: 2rem;
+    }
+    
+    .p-button.p-button-sm .p-button-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+:host ::ng-deep .p-column-filter input {
+  text-align: center;
+}
+
+/* Centrar contenido de celdas y encabezados */
+:host ::ng-deep .p-datatable-tbody > tr > td,
+:host ::ng-deep .p-datatable-thead > tr > th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Para la columna de acciones, mantener los botones centrados pero sin afectar su alineación interna */
+:host ::ng-deep .actions-column {
+  text-align: center;
+}
+
+/* Opcional: mejorar apariencia de los botones en columna de acciones */
+:host ::ng-deep .actions-column .p-button {
+  margin: 0 0.25rem;
+}
+
+/* Centrar contenido de celdas y encabezados */
+:host ::ng-deep .p-datatable-tbody > tr > td,
+:host ::ng-deep .p-datatable-thead > tr > th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+:host ::ng-deep .p-column-filter {
+  justify-content: center;
+}
+
+:host ::ng-deep .p-column-filter input {
+  text-align: center;
+}

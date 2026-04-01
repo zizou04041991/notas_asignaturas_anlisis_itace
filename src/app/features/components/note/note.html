@@ -1,45 +1,30 @@
+<!-- Note.component.html -->
 <div class="card flex justify-center gap-2">
   <p-confirmdialog />
 </div>
 
 <div class="bg-white rounded-xl shadow-md p-4 md:p-6">
   <div
-    class="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-3 mb-4 md:mb-6"
+    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6"
   >
-   
+    <h2 class="text-xl font-semibold">Gestión de Calificación</h2>
     <button
-    (click)="addNote()"
       class="text-sm bg-blue-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
+      (click)="addSemester()"
     >
       + Nueva Calificación
     </button>
   </div>
 
-  <div class="card">
-    <div class="p-4">
-      <app-table
-        [data]="notes()"
-        [columns]="columns"
-        [loading]="loading()"
-        [totalRecords]="totalRecords()"
-        [paginator]="true"
-        [rows]="10"
-        [rowsPerPageOptions]="[5, 10, 20, 50]"
-        [showToolbar]="false"
-        [showGlobalFilter]="false"
-        [showColumnFilters]="true"
-        [showAddButton]="false"
-        [showExportButton]="false"
-        [showActions]="true"
-        [showViewAction]="false"
-        [showEditAction]="true"
-        [showDeleteAction]="true"
-        (onEdit)="onEditNote($event)"
-        (onDelete)="onDeleteNote($event)"
-      >
-        
-      </app-table>
-    </div>
-  </div>
-
+  <app-reusable-table
+    [data]="notes()"
+    [loading]="loading()"
+    [totalRecords]="totalRecords() || 0"
+    [first]="(currentPage() * pageSize()) || 0"
+    [rows]="pageSize() || 10"
+    [config]="tableConfig"
+    (loadData)="loadNotes($event)"
+    (onEdit)="onEditNote($event)"
+    (onDelete)="onDeleteNote($event)"
+  />
 </div>

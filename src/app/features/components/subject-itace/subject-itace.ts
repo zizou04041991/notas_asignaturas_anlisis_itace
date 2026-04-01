@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { ChangeDetectorRef, Component, computed, inject, signal, ViewChild } from '@angular/core';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { SubjectItaceService } from './services/subject_itace_service';
 import { SubjectItaceInterface } from './interface/subject_itace_interface';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,11 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastService } from '../../../shared/services/toast.service';
+import {
+  FiltersState,
+  ReusableTable,
+  TableConfig,
+} from '../../../shared/components/reusable-table/reusable-table';
 
 @Component({
   selector: 'app-subject-itace',
@@ -21,6 +26,7 @@ import { ToastService } from '../../../shared/services/toast.service';
     FormsModule,
     ButtonModule,
     ConfirmDialogModule,
+    ReusableTable
   ],
   templateUrl: './subject-itace.html',
   styleUrl: './subject-itace.css',
@@ -28,19 +34,255 @@ import { ToastService } from '../../../shared/services/toast.service';
 })
 export class SubjectItace {
   private subjectItaceService = inject(SubjectItaceService);
-  subjectiTaces!: SubjectItaceInterface[];
-  loading: boolean = false;
-  ref: DynamicDialogRef | undefined;
-  toastService = inject(ToastService);
-
+  private toastService = inject(ToastService);
   private confirmationService = inject(ConfirmationService);
+  private dialogService = inject(DialogService);
 
-  confirm(id: number) {
+  @ViewChild(ReusableTable) reusableTable!: ReusableTable;
+
+  ref: DynamicDialogRef | null = null;
+
+  // Signals para datos
+  subjectItace = signal<any[]>([]);
+  loading = signal<boolean>(false);
+  totalRecords = signal<number>(0);
+
+  // Signals para el estado de la tabla
+  currentPage = signal<number>(0);
+  pageSize = signal<number>(10);
+  currentSortField = signal<string>('numero');
+  currentSortOrder = signal<number>(1);
+  currentFilters = signal<FiltersState>({});
+
+  // Signal computada para construir los parámetros de la URL
+  queryParams = computed(() => {
+    const page = this.currentPage() + 1; // La API espera página empezando en 1
+    const pageSize = this.pageSize();
+    const sortField = this.currentSortField();
+    const sortOrder = this.currentSortOrder();
+    const filters = this.currentFilters();
+
+    let params = `?page=${page}&page_size=${pageSize}`;
+
+    // Agregar ordenamiento
+    if (sortField) {
+      const order = sortOrder === -1 ? '-' : '';
+      params += `&ordering=${order}${sortField}`;
+    }
+
+    // Agregar filtros activos
+    Object.entries(filters).forEach(([key, filter]) => {
+      if (filter?.value !== null && filter?.value !== undefined && filter?.value !== '') {
+        // Escapar el valor para la URL
+        const encodedValue = encodeURIComponent(filter.value);
+        params += `&${key}=${encodedValue}`;
+      }
+    });
+
+    return params;
+  });
+
+  // Señal computada para verificar si hay filtros activos
+  hasActiveFilters = computed(() => {
+    return Object.values(this.currentFilters()).some(
+      (filter) => filter?.value !== null && filter?.value !== undefined && filter?.value !== '',
+    );
+  });
+
+  // Configuración de la tabla
+  tableConfig: TableConfig = {
+    columns: [
+      {
+        field: 'nombre',
+        header: 'Nombre',
+        sortable: true,
+        filterable: true,
+        filterType: 'text',
+        filterMatchMode: 'contains',
+        width: '70%',
+      },
+      {
+        field: 'color', // Nuevo campo
+        header: 'Color',
+        sortable: false, // No ordenable
+        filterable: false, // No filtrable
+        width: '10%',
+      },
+    ],
+    globalFilterFields: ['nombre'],
+    rowsPerPageOptions: [5, 10, 25, 50],
+    defaultRows: 10,
+    showCurrentPageReport: true,
+    currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} materias',
+    tableStyle: { 'min-width': '50rem' },
+    sortField: 'nombre',
+    sortOrder: 1,
+    actions: {
+      edit: true,
+      delete: true,
+      view: false,
+    },
+  };
+
+  ngOnInit() {
+    // Cargar datos iniciales
+    this.loadSubjects();
+  }
+
+  /**
+   * Carga los semestres con los filtros actuales
+   * @param event Evento de lazy load
+   * @param successMessage Mensaje opcional para mostrar después de carga exitosa
+   */
+  loadSubjects(event?: TableLazyLoadEvent, successMessage?: string): void {
+    // Actualizar signals con el estado del evento
+    if (event) {
+      this.updateStateFromEvent(event);
+    }
+
+    this.loading.set(true);
+
+    this.subjectItaceService.getSubjectItaces(this.queryParams()).subscribe({
+      next: (data) => {
+        this.subjectItace.set(data.results);
+        this.totalRecords.set(data.count || data.total);
+        this.loading.set(false);
+
+        // Mostrar mensaje de éxito si se proporcionó
+        if (successMessage) {
+          this.toastService.showSuccessToast(successMessage);
+        }
+      },
+      error: (error) => {
+        this.loading.set(false);
+        this.handleError(error);
+      },
+    });
+  }
+
+  /**
+   * Actualiza el estado interno a partir de un evento de lazy load
+   */
+  private updateStateFromEvent(event: TableLazyLoadEvent): void {
+    // Actualizar página
+    if (event.first !== undefined && event.rows) {
+      const newPage = Math.floor(event.first / event.rows);
+      this.currentPage.set(newPage);
+      this.pageSize.set(event.rows);
+    }
+
+    // Actualizar ordenamiento
+    if (event.sortField) {
+      this.currentSortField.set(event.sortField as string);
+      this.currentSortOrder.set(event.sortOrder || 1);
+    }
+
+    // Actualizar filtros - solo los que tienen valor
+    if (event.filters) {
+      const activeFilters: FiltersState = {};
+
+      Object.entries(event.filters).forEach(([key, filterValue]) => {
+        // Verificar si es un filtro con valor
+        if (filterValue && typeof filterValue === 'object') {
+          // Manejar el caso de filtro simple
+          const filter = filterValue as any;
+          if (filter.value !== null && filter.value !== undefined && filter.value !== '') {
+            activeFilters[key] = {
+              value: filter.value,
+              matchMode: filter.matchMode || 'contains',
+            };
+          }
+        }
+      });
+
+      this.currentFilters.set(activeFilters);
+    }
+  }
+
+  /**
+   * Recarga los datos manteniendo los filtros actuales
+   * pero volviendo a la primera página
+   * @param successMessage Mensaje opcional para mostrar después de la recarga
+   */
+  reloadWithCurrentFilters(successMessage?: string): void {
+    const reloadEvent: TableLazyLoadEvent = {
+      first: 0, // Volver a primera página
+      rows: this.pageSize(),
+      sortField: this.currentSortField(),
+      sortOrder: this.currentSortOrder(),
+      filters: this.currentFilters(),
+    };
+
+    // Pasar el mensaje al loadSubjects
+    this.loadSubjects(reloadEvent, successMessage);
+  }
+
+  /**
+   * Agrega un nuevo semestre
+   */
+  addSubject(): void {
+    this.ref = this.dialogService.open(EditAddSubject, {
+      header: 'Adicionar TCP',
+      modal: true,
+      closable: true,
+      width: '70%',
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 10000,
+    });
+
+    if (this.ref) {
+      this.ref.onClose.subscribe((formResponse: any) => {
+        if (formResponse) {
+          this.subjectItaceService.createSubjectItace(formResponse).subscribe({
+            next: () => {
+              // Recargar datos después de crear y mostrar mensaje
+              this.reloadWithCurrentFilters('TCP creado exitosamente');
+            },
+            error: (error) => this.handleError(error),
+          });
+        }
+      });
+    }
+  }
+
+  /**
+   * Edita un semestre existente
+   */
+  onEditSubject(data: any): void {
+    this.ref = this.dialogService.open(EditAddSubject, {
+      header: 'Editar Materia',
+      modal: true,
+      closable: true,
+      width: '70%',
+      data,
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 10000,
+    });
+
+    if (this.ref) {
+      this.ref.onClose.subscribe((formResponse: any) => {
+        if (formResponse) {
+          this.subjectItaceService.updateSubjectItace(data.id, formResponse).subscribe({
+            next: () => {
+              // Recargar datos después de editar y mostrar mensaje
+              this.reloadWithCurrentFilters('Materia actualizada exitosamente');
+            },
+            error: (error) => this.handleError(error),
+          });
+        }
+      });
+    }
+  }
+
+  /**
+   * Elimina un semestre
+   */
+  onDeleteSubject(data: any): void {
     this.confirmationService.confirm({
-      message: 'Desea eliminar este registro?',
-      header: 'Eliminar',
+      message: '¿Desea eliminar este materia?',
+      header: 'Confirmar Eliminación',
       icon: 'pi pi-info-circle',
-      rejectLabel: 'Cancel',
+      rejectLabel: 'Cancelar',
       rejectButtonProps: {
         label: 'Cancelar',
         severity: 'secondary',
@@ -50,124 +292,48 @@ export class SubjectItace {
         label: 'Eliminar',
         severity: 'danger',
       },
-
       accept: () => {
-        this.subjectItaceService.deleteSubjectItace(id).subscribe(
-          (value) => {
-            this.loadSubject();
-          },
-          (error) => {
-            if (error.status !== 0 && error.status !== 401) {
-              if (error?.error.hasOwnProperty('error')) {
-                console.log();
-                this.toastService.showErrorToast(error.error.error);
-              } else {
-                this.toastService.showErrorToastGeneric();
-              }
+        this.subjectItaceService.deleteSubjectItace(data.id).subscribe({
+          next: () => {
+            // Verificar si después de eliminar aún hay registros en la página actual
+            const currentDataLength = this.subjectItace().length;
+
+            if (currentDataLength === 1 && this.currentPage() > 0) {
+              // Si era el último registro de la página y no es la primera página,
+              // retroceder una página
+              const previousPage = this.currentPage() - 1;
+              this.currentPage.set(previousPage);
             }
+
+            // Recargar datos después de eliminar y mostrar mensaje
+            this.reloadWithCurrentFilters('Materia eliminado exitosamente');
           },
-        );
+          error: (error) => this.handleError(error),
+        });
       },
-      reject: () => {},
     });
   }
-  constructor(
-    public dialogService: DialogService,
-    public cd: ChangeDetectorRef,
-  ) {}
 
-  ngOnInit() {
-    this.loadSubject(true);
+  /**
+   * Obtiene un resumen de los filtros activos para mostrar
+   */
+  getActiveFiltersSummary(): string {
+    const filters = this.currentFilters();
+    return Object.entries(filters)
+      .map(([key, filter]) => `${key}: ${filter.value}`)
+      .join(', ');
   }
 
-  loadSubject(initial: boolean = false) {
-    this.loading = true;
-    this.subjectItaceService.getSubjectItaces().subscribe(
-      (data) => {
-        this.subjectiTaces = data;
-        this.loading = false;
-        this.cd.detectChanges();
-        if (!initial) this.toastService.showSuccessToastGeneric();
-      },
-      (error) => {
-        this.loading = false;
-        if (error.status !== 0 && error.status !== 401) {
-          if (error?.error.hasOwnProperty('error')) {
-            console.log();
-            this.toastService.showErrorToast(error.error.error);
-          } else {
-            this.toastService.showErrorToastGeneric();
-          }
-        }
-      },
-    );
-  }
-
-  edit(subjectData: SubjectItaceInterface) {
-    this.ref = this.dialogService.open(EditAddSubject, {
-      header: 'Editar Asignatura',
-      modal: true,
-      closable: true,
-      focusOnShow: false,
-      width: '70%',
-      data: subjectData,
-      contentStyle: { overflow: 'auto' },
-      baseZIndex: 10000,
-    }) as any;
-
-    this.ref!.onClose.subscribe((formResponse: any) => {
-      if (formResponse) {
-        this.subjectItaceService.updateSubjectItace(subjectData.id, formResponse).subscribe(
-          (value) => {
-            this.loadSubject();
-          },
-          (error) => {
-            if (error.status !== 0 && error.status !== 401) {
-              if (error?.error.hasOwnProperty('error')) {
-                console.log();
-                this.toastService.showErrorToast(error.error.error);
-              } else {
-                this.toastService.showErrorToastGeneric();
-              }
-            }
-          },
-        );
+  /**
+   * Maneja errores de las peticiones HTTP
+   */
+  private handleError(error: any): void {
+    if (error.status !== 0 && error.status !== 401) {
+      if (error?.error?.hasOwnProperty('error')) {
+        this.toastService.showErrorToast(error.error.error);
+      } else {
+        this.toastService.showErrorToastGeneric();
       }
-    });
-  }
-  delete(subjectData: SubjectItaceInterface) {
-    this.confirm(subjectData.id);
-  }
-
-  show() {
-    this.ref = this.dialogService.open(EditAddSubject, {
-      header: 'Adicionar Asignatura',
-      modal: true,
-      closable: true,
-      focusOnShow: false,
-      width: '70%',
-      contentStyle: { overflow: 'auto' },
-      baseZIndex: 10000,
-    }) as any;
-
-    this.ref!.onClose.subscribe((formResponse: any) => {
-      if (formResponse) {
-        this.subjectItaceService.createSubjectItace(formResponse).subscribe(
-          () => {
-            this.loadSubject();
-          },
-          (error) => {
-            if (error.status !== 0 && error.status !== 401) {
-              if (error?.error.hasOwnProperty('error')) {
-                console.log();
-                this.toastService.showErrorToast(error.error.error);
-              } else {
-                this.toastService.showErrorToastGeneric();
-              }
-            }
-          },
-        );
-      }
-    });
+    }
   }
 }

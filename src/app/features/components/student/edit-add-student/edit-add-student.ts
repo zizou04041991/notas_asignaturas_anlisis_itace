@@ -25,6 +25,7 @@ export class EditAddStudent implements OnInit {
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
   ) {
+    console.log('datos', this.config?.data);
     this.formStudent = new FormGroup({
       curp: new FormControl(this.config?.data ? this.config?.data?.curp : '', Validators.required),
       nombre: new FormControl(
@@ -50,11 +51,14 @@ export class EditAddStudent implements OnInit {
     this.loading = true;
     this.semesterService.getSemesters().subscribe(
       (value) => {
-        this.SEMESTER = value;
+        console.log('el listado', value);
+        this.SEMESTER = value.results;
         this.loading = false;
         this.cd.detectChanges();
       },
-      (error) => {},
+      (error) => {
+        this.loading = false;
+      },
     );
   }
 

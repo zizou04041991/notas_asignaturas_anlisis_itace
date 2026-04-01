@@ -1,0 +1,153 @@
+<!-- reusable-table.component.html -->
+<div class="reusable-table-container">
+  <!-- Header opcional -->
+  @if (headerTemplate) {
+    <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+  }
+
+  <p-table
+    #dt
+    [value]="data()"
+    [lazy]="true"
+    [loading]="loading()"
+    [paginator]="true"
+    [rows]="safeRows()"
+    [totalRecords]="safeTotalRecords()"
+    [first]="safeFirst()"
+    [rowsPerPageOptions]="rowsPerPageOptions()"
+    [showCurrentPageReport]="showCurrentPageReport()"
+    [currentPageReportTemplate]="currentPageReportTemplate()"
+    [globalFilterFields]="globalFilterFields()"
+    [tableStyle]="tableStyle()"
+    (onLazyLoad)="onLazyLoad($event)"
+    [sortField]="defaultSortField()"
+    [sortOrder]="defaultSortOrder()"
+  >
+    
+    <!-- Header con filtros -->
+    <ng-template #header>
+      <!-- Fila de títulos de columnas -->
+      <tr>
+        @for (col of config().columns; track col.field) {
+          <th 
+            [pSortableColumn]="col.sortable ? col.field : ''"
+            [style.width]="col.width"
+            [ngStyle]="col.style"
+          >
+            <div class="flex align-items-center">
+              {{ col.header }}
+              @if (col.sortable) {
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+              }
+            </div>
+          </th>
+        }
+        
+        <!-- Columna de acciones si está habilitada -->
+        @if (showActions()) {
+          <th style="width: 120px">Acciones</th>
+        }
+      </tr>
+
+      <!-- Fila de filtros (solo si hay columnas filtrables) -->
+      @if (hasFilterableColumns()) {
+        <tr>
+          @for (col of config().columns; track col.field) {
+            <th>
+              @if (col.filterable) {
+                <p-columnFilter
+                  [type]="col.filterType || 'text'"
+                  [field]="col.field"
+                  class="w-full"
+                  [showMenu]="false"
+                  [matchMode]="col.filterMatchMode || 'contains'"
+                  [placeholder]="'Filtrar ' + col.header"
+                ></p-columnFilter>
+              }
+            </th>
+          }
+          
+          <!-- Columna vacía para acciones -->
+          @if (showActions()) {
+            <th></th>
+          }
+        </tr>
+      }
+    </ng-template>
+
+    <!-- Body principal -->
+    <ng-template #body let-rowData>
+      <tr>
+        <!-- Columnas dinámicas -->
+        @if (!customBodyTemplate) {
+          @for (col of config().columns; track col.field) {
+            <td>{{ rowData[col.field] }}</td>
+          }
+        } @else {
+          <ng-container 
+            *ngTemplateOutlet="customBodyTemplate; context: { $implicit: rowData }">
+          </ng-container>
+        }
+
+        <!-- Acciones -->
+        @if (showActions()) {
+          <td class="actions-column">
+            @if (!customActionsTemplate) {
+              <!-- Acciones por defecto usando las signals computadas -->
+              <div class="flex gap-1">
+                @if (hasViewAction()) {
+                  <p-button
+                    icon="pi pi-eye"
+                    severity="info"
+                    styleClass="p-button-rounded p-button-text p-button-sm"
+                    (click)="onViewClick(rowData)"
+                    pTooltip="Ver detalles"
+                    tooltipPosition="top"
+                  />
+                }
+                
+                @if (hasEditAction()) {
+                  <p-button
+                    icon="pi pi-pencil"
+                    severity="success"
+                    styleClass="p-button-rounded p-button-text p-button-sm"
+                    (click)="onEditClick(rowData)"
+                    pTooltip="Editar"
+                    tooltipPosition="top"
+                  />
+                }
+                
+                @if (hasDeleteAction()) {
+                  <p-button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    styleClass="p-button-rounded p-button-text p-button-sm"
+                    (click)="onDeleteClick(rowData)"
+                    pTooltip="Eliminar"
+                    tooltipPosition="top"
+                  />
+                }
+              </div>
+            } @else {
+              <!-- Template personalizado para acciones -->
+              <ng-container 
+                *ngTemplateOutlet="customActionsTemplate; context: { $implicit: rowData }">
+              </ng-container>
+            }
+          </td>
+        }
+      </tr>
+    </ng-template>
+
+    <!-- Mensaje cuando no hay datos -->
+    <ng-template #emptymessage>
+      <tr>
+        <td [attr.colspan]="getTotalColumns()">
+          <div class="text-center p-4">
+            No hay registros disponibles
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
