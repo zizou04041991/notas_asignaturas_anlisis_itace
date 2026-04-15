@@ -1,66 +1,100 @@
-:host {
-  display: block;
-  min-height: 100vh;
+/* Eliminar estilos de error automáticos de PrimeNG */
+::ng-deep .p-inputtext.ng-invalid.ng-touched,
+::ng-deep .p-inputtext.ng-invalid.ng-dirty,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-touched,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-dirty {
+  border-color: #e5e7eb !important;  /* color normal (gris) */
+  box-shadow: none !important;
+  background-color: white !important;
 }
 
-/* Estilos personalizados para PrimeNG */
-::ng-deep .p-password {
-  width: 100%;
+/* Clase personalizada para error */
+.input-error {
+  border-color: #f87171 !important;
+  background-color: #fef2f2 !important;
 }
 
-::ng-deep .p-password input {
-  width: 100%;
-  padding-left: 2.5rem;
+
+/* 1. Eliminar estilos rojos automáticos de PrimeNG en inputs inválidos */
+::ng-deep .p-inputtext.ng-invalid.ng-touched,
+::ng-deep .p-inputtext.ng-invalid.ng-dirty,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-touched,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-dirty {
+  border-color: #e5e7eb !important;  /* color normal gris */
+  background-color: white !important;
+  box-shadow: none !important;
+  color: inherit !important;          /* evita texto rojo */
 }
 
-::ng-deep .p-inputtext {
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
+/* 2. Clase personalizada para error (borde rojo y fondo rojo claro) */
+.input-error {
+  border-color: #f87171 !important;
+  background-color: #fef2f2 !important;
 }
 
-::ng-deep .p-input-icon-left {
-  width: 100%;
+/* 3. Forzar color de placeholder NORMAL (gris) en todos los casos */
+input::placeholder,
+.p-password .p-inputtext::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
 }
 
-::ng-deep .p-input-icon-left i {
-  left: 1rem;
-  color: #6b7280;
+/* 4. Asegurar que el placeholder NO se ponga rojo aunque el campo tenga error */
+.input-error::placeholder,
+.p-password .p-inputtext.input-error::placeholder {
+  color: #9ca3af !important;  /* mismo gris, nunca rojo */
 }
 
-::ng-deep .p-button {
-  font-weight: 600;
+
+/* Eliminar TODOS los estilos de error de PrimeNG en campos password */
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-touched,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-dirty,
+::ng-deep .p-password .p-inputtext.ng-invalid {
+  border-color: #e5e7eb !important;   /* gris normal */
+  background-color: white !important;
+  box-shadow: none !important;
+  color: inherit !important;
 }
 
-::ng-deep .p-button-outlined {
-  border-width: 2px;
+/* Forzar que el placeholder nunca sea rojo */
+::ng-deep .p-password .p-inputtext::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
 }
 
-::ng-deep .p-checkbox .p-checkbox-box {
-  border-width: 2px;
+
+/* Reset completo de estilos de error para el campo password de PrimeNG */
+::ng-deep .p-password .p-inputtext {
+  /* Forzar borde gris siempre, sin importar las clases de Angular */
+  border-color: #e5e7eb !important;
+  background-color: white !important;
+  box-shadow: none !important;
+  color: #111827 !important; /* color de texto normal */
 }
 
-/* Estilos para estados de error */
-::ng-deep .ng-invalid.ng-dirty .p-inputtext {
-  border-color: #ef4444;
+/* Eliminar cualquier intento de PrimeNG de poner borde rojo o sombra roja */
+::ng-deep .p-password .p-inputtext.ng-invalid,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-touched,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-dirty,
+::ng-deep .p-password .p-inputtext.ng-invalid.ng-pristine,
+::ng-deep .p-password .p-inputtext.ng-dirty.ng-invalid,
+::ng-deep .p-password .p-inputtext.ng-touched.ng-invalid {
+  border-color: #e5e7eb !important;
+  background-color: white !important;
+  box-shadow: none !important;
+  color: #111827 !important;
 }
 
-::ng-deep .ng-invalid.ng-dirty .p-inputtext:enabled:focus {
-  box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.2);
+/* Placeholder siempre gris */
+::ng-deep .p-password .p-inputtext::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
 }
 
-/* Animaciones */
-.p-card {
-  transition: transform 0.3s ease;
-}
-
-.p-card:hover {
-  transform: translateY(-5px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  ::ng-deep .p-card {
-    margin: 0;
-    border-radius: 1rem;
-  }
+/* Si quieres también eliminar el rojo del campo "número de control" normal */
+::ng-deep .p-inputtext.ng-invalid.ng-touched,
+::ng-deep .p-inputtext.ng-invalid.ng-dirty {
+  border-color: #e5e7eb !important;
+  background-color: white !important;
+  box-shadow: none !important;
 }
