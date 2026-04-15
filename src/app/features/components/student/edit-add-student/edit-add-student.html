@@ -25,9 +25,19 @@
           }
         </div>
       }
+      @if (campoInvalido('curp')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formStudent.get('curp')?.errors?.['pattern']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El curp es debe tener 18 caracteres</span>
+            </div>
+          }
+        </div>
+      }
     </div>
 
-    <!-- Campo semestre_id -->
+    <!-- Campo semestre_actual -->
     <div class="col-span-1">
       <label class="block text-xs font-medium text-gray-600 mb-1">
         Semestre <span class="text-red-500">*</span>
@@ -36,34 +46,35 @@
       <input
         type="text"
         placeholder="Semestre"
-        formControlName="semestre_id"
+        formControlName="semestre_actual"
         class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
-        [class.border-red-400]="campoInvalido('semestre_id')"
-        [class.bg-red-50]="campoInvalido('semestre_id')"
-        [class.border-gray-300]="!campoInvalido('semestre_id')"
+        [class.border-red-400]="campoInvalido('semestre_actual')"
+        [class.bg-red-50]="campoInvalido('semestre_actual')"
+        [class.border-gray-300]="!campoInvalido('semestre_actual')"
       /> -->
 
       <p-select
         [options]="SEMESTER"
-        formControlName="semestre_id"
+        formControlName="semestre_actual"
         class="w-full transition duration-150"
         placeholder="Seleccione Semestre"
         optionLabel="numero"
         optionValue="id"
-        [invalid]="campoInvalido('semestre_id')"
+        [invalid]="campoInvalido('semestre_actual')"
         [virtualScroll]="true"
-        [virtualScrollItemSize]="5"
+        [virtualScrollItemSize]="38"
+        appendTo="body"
         [filter]="true"
         filterBy="numero"
         [loading]="loading"
       />
 
-      @if (campoInvalido('semestre_id')) {
+      @if (campoInvalido('semestre_actual')) {
         <div class="mt-1.5 text-xs text-red-500">
-          @if (formStudent.get('semestre_id')?.errors?.['required']) {
+          @if (formStudent.get('semestre_actual')?.errors?.['required']) {
             <div class="flex items-start gap-1.5">
               <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
-              <span>El semestre_id es obligatorio</span>
+              <span>El semestre_actual es obligatorio</span>
             </div>
           }
         </div>
@@ -78,26 +89,26 @@
       <input
         type="text"
         placeholder="Nombre"
-        formControlName="nombre"
+        formControlName="first_name"
         class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
-        [class.border-red-400]="campoInvalido('nombre')"
-        [class.bg-red-50]="campoInvalido('nombre')"
-        [class.border-gray-300]="!campoInvalido('nombre')"
+        [class.border-red-400]="campoInvalido('first_name')"
+        [class.bg-red-50]="campoInvalido('first_name')"
+        [class.border-gray-300]="!campoInvalido('first_name')"
       />
 
-      @if (campoInvalido('nombre')) {
+      @if (campoInvalido('first_name')) {
         <div class="mt-1.5 text-xs text-red-500">
-          @if (formStudent.get('nombre')?.errors?.['required']) {
+          @if (formStudent.get('first_name')?.errors?.['required']) {
             <div class="flex items-start gap-1.5">
               <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
-              <span>El nombre es obligatorio</span>
+              <span>El first_name es obligatorio</span>
             </div>
           }
         </div>
       }
     </div>
 
-    <!-- Campo apellidos -->
+    <!-- Campo last_name -->
     <div class="col-span-1">
       <label class="block text-xs font-medium text-gray-600 mb-1">
         Apellidos <span class="text-red-500">*</span>
@@ -105,19 +116,19 @@
       <input
         type="text"
         placeholder="Apellidos"
-        formControlName="apellidos"
+        formControlName="last_name"
         class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
-        [class.border-red-400]="campoInvalido('apellidos')"
-        [class.bg-red-50]="campoInvalido('apellidos')"
-        [class.border-gray-300]="!campoInvalido('apellidos')"
+        [class.border-red-400]="campoInvalido('last_name')"
+        [class.bg-red-50]="campoInvalido('last_name')"
+        [class.border-gray-300]="!campoInvalido('last_name')"
       />
 
-      @if (campoInvalido('apellidos')) {
+      @if (campoInvalido('last_name')) {
         <div class="mt-1.5 text-xs text-red-500">
-          @if (formStudent.get('apellidos')?.errors?.['required']) {
+          @if (formStudent.get('last_name')?.errors?.['required']) {
             <div class="flex items-start gap-1.5">
               <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
-              <span>El apellidos es obligatorio</span>
+              <span>El last_name es obligatorio</span>
             </div>
           }
         </div>
@@ -130,7 +141,7 @@
         Número Control <span class="text-red-500">*</span>
       </label>
       <input pInputText id="alphanumeric" pKeyFilter="alphanum"
-        placeholder="numero_control"
+        placeholder="Número Control"
         formControlName="numero_control"
         class="w-full px-3 py-2 text-sm border rounded-md outline-none transition duration-150"
         [class.border-red-400]="campoInvalido('numero_control')"
@@ -143,7 +154,17 @@
           @if (formStudent.get('numero_control')?.errors?.['required']) {
             <div class="flex items-start gap-1.5">
               <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
-              <span>El número control es obligatorio</span>
+              <span>El Número Control es obligatorio</span>
+            </div>
+          }
+        </div>
+      }
+      @if (campoInvalido('numero_control')) {
+        <div class="mt-1.5 text-xs text-red-500">
+          @if (formStudent.get('numero_control')?.errors?.['pattern']) {
+            <div class="flex items-start gap-1.5">
+              <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
+              <span>El Número Control debe tener 14 caracteres</span>
             </div>
           }
         </div>

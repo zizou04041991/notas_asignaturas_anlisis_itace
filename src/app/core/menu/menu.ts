@@ -1,28 +1,42 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, Input, Output, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+  OnInit,
+  inject,
+  OnDestroy,
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { 
-  faGraduationCap, 
-  faUserCircle,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons';
+import { faGraduationCap, faUserCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { RUTAS_CONFIG, getRutasParaMenu } from '../rutas.config';
+import { LoginAuth } from '../../auth/services/login-auth';
+import { AdminInterface, StudentInterface } from '../constant/user-login';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
   imports: [CommonModule, RouterModule, FontAwesomeModule],
   templateUrl: './menu.html',
-  styleUrls: ['./menu.css']
+  styleUrls: ['./menu.css'],
 })
-export class Menu implements OnInit {
+export class Menu implements OnInit,OnDestroy {
   year = new Date().getFullYear();
   @Input() menuAbierto = false;
   @Output() menuAbiertoChange = new EventEmitter<boolean>();
-  
+
   isMobile = window.innerWidth < 768;
-  rutasMenu = getRutasParaMenu();
+  authService = inject(LoginAuth);
+  userType: AdminInterface
+      | StudentInterface = JSON.parse(localStorage.getItem(this.authService.tokenUser) as string);
+
+  rutasMenu =
+    this.userType.tipo === 'student'
+      ? getRutasParaMenu().filter((v) => v.user === 'all')
+      : getRutasParaMenu();
 
   // Iconos de FontAwesome
   faGraduationCap = faGraduationCap;
@@ -32,6 +46,9 @@ export class Menu implements OnInit {
   ngOnInit() {
     // Asegurar que el sidebar tenga la altura correcta al iniciar
     this.ajustarAltura();
+  }
+  ngOnDestroy(): void {
+    this.authService.logout();
   }
 
   @HostListener('window:resize', ['$event'])

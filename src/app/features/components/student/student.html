@@ -10,7 +10,7 @@
     <h2 class="text-xl font-semibold">Gestión de Estudiante</h2>
     <button
       class="text-sm bg-blue-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
-      (click)="addSemester()"
+      (click)="addStudent()"
     >
       + Nuevo Estudiante
     </button>
@@ -26,5 +26,6 @@
     (loadData)="loadStudents($event)"
     (onEdit)="onEditStudent($event)"
     (onDelete)="onDeleteStudent($event)"
+    (onView)="onViewStudent($event)"
   />
 </div>

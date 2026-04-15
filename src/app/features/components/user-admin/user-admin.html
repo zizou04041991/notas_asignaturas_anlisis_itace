@@ -1,4 +1,4 @@
-<!-- Note.component.html -->
+<!-- Admin.component.html -->
 <div class="card flex justify-center gap-2">
   <p-confirmdialog />
 </div>
@@ -7,27 +7,25 @@
   <div
     class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6"
   >
-    <h2 class="text-xl font-semibold">Gestión de Calificación</h2>
-    @if(user?.tipo === 'admin'){
+    <h2 class="text-xl font-semibold">Gestión de Admin</h2>
     <button
       class="text-sm bg-blue-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
-      (click)="addSemester()"
+      (click)="addAdmin()"
     >
-      + Nueva Calificación
+      + Nuevo Admin
     </button>
-  }
   </div>
 
   <app-reusable-table
-    [data]="notes()"
+    [data]="admins()"
     [loading]="loading()"
     [totalRecords]="totalRecords() || 0"
     [first]="(currentPage() * pageSize()) || 0"
     [rows]="pageSize() || 10"
     [config]="tableConfig"
-    (loadData)="loadNotes($event)"
-    (onEdit)="onEditNote($event)"
-    (onDelete)="onDeleteNote($event)"
-    [showActions]="user && this.user?.tipo === 'admin'"
+    (loadData)="loadadmins($event)"
+    (onEdit)="onEditAdmin($event)"
+    (onDelete)="onDeleteAdmin($event)"
+    (onView)="onViewAdmin($event)"
   />
 </div>

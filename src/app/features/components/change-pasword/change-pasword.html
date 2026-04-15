@@ -1,0 +1,64 @@
+<div class="p-6 bg-white rounded-lg shadow-sm max-w-md mx-auto">
+      <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
+        <!-- Contraseña actual -->
+        <div class="mb-5">
+          <label for="oldPassword" class="block mb-2 font-semibold">Contraseña actual</label>
+          <p-password
+            id="oldPassword"
+            formControlName="oldPassword"
+            [feedback]="false"
+            [toggleMask]="true"
+            styleClass="w-full"
+            [inputStyleClass]="'w-full'"
+            placeholder="Ingrese su contraseña actual"
+          ></p-password>
+          @if (submitted && f['oldPassword'].errors?.['required']) {
+            <small class="text-red-500">La contraseña actual es obligatoria.</small>
+          }
+        </div>
+
+        <!-- Nueva contraseña -->
+        <div class="mb-5">
+          <label for="newPassword" class="block mb-2 font-semibold">Nueva contraseña</label>
+          <p-password
+            id="newPassword"
+            formControlName="newPassword"
+            [toggleMask]="true"
+            styleClass="w-full"
+            [inputStyleClass]="'w-full'"
+            placeholder="Ingrese su nueva contraseña"
+          ></p-password>
+          @if (submitted && f['newPassword'].errors?.['required']) {
+            <small class="text-red-500">La nueva contraseña es obligatoria.</small>
+          }
+          @if (submitted && f['newPassword'].errors?.['minlength']) {
+            <small class="text-red-500">La contraseña debe tener al menos 8 caracteres.</small>
+          }
+        </div>
+
+        <!-- Confirmar nueva contraseña -->
+        <div class="mb-6">
+          <label for="confirmPassword" class="block mb-2 font-semibold">Confirmar nueva contraseña</label>
+          <p-password
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            [feedback]="false"
+            [toggleMask]="true"
+            styleClass="w-full"
+            [inputStyleClass]="'w-full'"
+            placeholder="Repita su nueva contraseña"
+          ></p-password>
+          @if (submitted && f['confirmPassword'].errors?.['required']) {
+            <small class="text-red-500">Confirmar la contraseña es obligatorio.</small>
+          }
+          @if (passwordForm.errors?.['mismatch'] && submitted) {
+            <small class="text-red-500">Las contraseñas no coinciden.</small>
+          }
+        </div>
+
+        <!-- Botón guardar -->
+        <div class="flex justify-end">
+          <button pButton type="submit" label="Guardar" icon="pi pi-check" [loading]="loading" [disabled]="loading"></button>
+        </div>
+      </form>
+    </div>

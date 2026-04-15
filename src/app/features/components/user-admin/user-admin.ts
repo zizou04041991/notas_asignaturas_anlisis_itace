@@ -1,56 +1,48 @@
 import { ChangeDetectorRef, Component, computed, inject, signal, ViewChild } from '@angular/core';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
-import { SubjectItaceService } from './services/subject_itace_service';
-import { SubjectItaceInterface } from './interface/subject_itace_interface';
+
 import { CommonModule } from '@angular/common';
-import { ColorPickerModule } from 'primeng/colorpicker';
-import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { EditAddSubject } from './edit-add-subject/edit-add-subject';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ToastService } from '../../../shared/services/toast.service';
 import {
   FiltersState,
   ReusableTable,
   TableConfig,
 } from '../../../shared/components/reusable-table/reusable-table';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { catchError, of, tap } from 'rxjs';
+import { LoginAuth } from '../../../auth/services/login-auth';
+import { AdminService } from './services/admin_service';
+import { EditAddAdmin } from './edit-add-admin/edit-add-admin';
 
 @Component({
-  selector: 'app-subject-itace',
-  imports: [
-    TableModule,
-    CommonModule,
-    ColorPickerModule,
-    FormsModule,
-    ButtonModule,
-    ConfirmDialogModule,
-    ReusableTable
-  ],
-  templateUrl: './subject-itace.html',
-  styleUrl: './subject-itace.css',
+  selector: 'app-user-admin',
+  imports: [CommonModule, ConfirmDialogModule, ReusableTable],
+  templateUrl: './user-admin.html',
+  styleUrl: './user-admin.css',
   providers: [DialogService, ConfirmationService],
 })
-export class SubjectItace {
-  private subjectItaceService = inject(SubjectItaceService);
+export class UserAdmin {
+  private adminService = inject(AdminService);
   private toastService = inject(ToastService);
   private confirmationService = inject(ConfirmationService);
   private dialogService = inject(DialogService);
+  authService = inject(LoginAuth);
 
   @ViewChild(ReusableTable) reusableTable!: ReusableTable;
 
   ref: DynamicDialogRef | null = null;
 
   // Signals para datos
-  subjectItace = signal<any[]>([]);
+  admins = signal<any[]>([]);
   loading = signal<boolean>(false);
   totalRecords = signal<number>(0);
 
   // Signals para el estado de la tabla
   currentPage = signal<number>(0);
   pageSize = signal<number>(10);
-  currentSortField = signal<string>('numero');
+  currentSortField = signal<string>('apellidos');
   currentSortOrder = signal<number>(1);
   currentFilters = signal<FiltersState>({});
 
@@ -93,45 +85,51 @@ export class SubjectItace {
   tableConfig: TableConfig = {
     columns: [
       {
-        field: 'nombre',
+        field: 'last_name',
+        header: 'Apellidos',
+        sortable: true,
+        filterable: true,
+        filterType: 'text',
+        filterMatchMode: 'contains',
+      },
+      {
+        field: 'first_name',
         header: 'Nombre',
         sortable: true,
         filterable: true,
         filterType: 'text',
         filterMatchMode: 'contains',
-        width: '70%',
       },
       {
-        field: 'color', // Nuevo campo
-        header: 'Color',
-        sortable: false, // No ordenable
-        filterable: false, // No filtrable
-        width: '10%',
+        field: 'username',
+        header: 'Username',
+        sortable: true,
+        filterable: true,
+        filterType: 'text',
+        filterMatchMode: 'contains',
       },
     ],
-    globalFilterFields: ['nombre'],
+    globalFilterFields: ['apellidos'],
     rowsPerPageOptions: [5, 10, 25, 50],
     defaultRows: 10,
     showCurrentPageReport: true,
-    currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} materias',
-    tableStyle: { 'min-width': '50rem' },
-    sortField: 'nombre',
+    currentPageReportTemplate: 'Mostrando {first} a {last} de {totalRecords} estudiantes',
+    tableStyle: { 'min-width': '50rem', 'text-align': 'center' },
+    sortField: 'apellidos',
     sortOrder: 1,
     actions: {
       edit: true,
       delete: true,
-      view: false,
+      view: true,
     },
   };
 
-
-
   /**
-   * Carga los semestres con los filtros actuales
+   * Carga los estudiantes con los filtros actuales
    * @param event Evento de lazy load
    * @param successMessage Mensaje opcional para mostrar después de carga exitosa
    */
-  loadSubjects(event?: TableLazyLoadEvent, successMessage?: string): void {
+  loadadmins(event?: TableLazyLoadEvent, successMessage?: string): void {
     // Actualizar signals con el estado del evento
     if (event) {
       this.updateStateFromEvent(event);
@@ -139,10 +137,18 @@ export class SubjectItace {
 
     this.loading.set(true);
 
-    this.subjectItaceService.getSubjectItaces(this.queryParams()).subscribe({
+    this.adminService.getAdmins(this.queryParams()).subscribe({
       next: (data) => {
-        this.subjectItace.set(data.results);
-        this.totalRecords.set(data.count || data.total);
+        console.log('Admins ****', data);
+        this.admins.set(
+          data.results.map((est: any) => ({
+            ...est,
+            //semestre_actual__numero: est.semestre_numero.numero,
+          })) || [],
+        );
+        // Asegurar que totalRecords sea un número
+        const total = data.count || data.total || 0;
+        this.totalRecords.set(typeof total === 'number' ? total : 0);
         this.loading.set(false);
 
         // Mostrar mensaje de éxito si se proporcionó
@@ -152,6 +158,7 @@ export class SubjectItace {
       },
       error: (error) => {
         this.loading.set(false);
+        this.totalRecords.set(0); // Reset en caso de error
         this.handleError(error);
       },
     });
@@ -210,16 +217,16 @@ export class SubjectItace {
       filters: this.currentFilters(),
     };
 
-    // Pasar el mensaje al loadSubjects
-    this.loadSubjects(reloadEvent, successMessage);
+    // Pasar el mensaje al loadadmins
+    this.loadadmins(reloadEvent, successMessage);
   }
 
   /**
-   * Agrega un nuevo semestre
+   * Agrega un nuevo estudiante
    */
-  addSubject(): void {
-    this.ref = this.dialogService.open(EditAddSubject, {
-      header: 'Adicionar TCP',
+  addAdmin(): void {
+    this.ref = this.dialogService.open(EditAddAdmin, {
+      header: 'Adicionar Estudiante',
       modal: true,
       closable: true,
       width: '70%',
@@ -230,10 +237,10 @@ export class SubjectItace {
     if (this.ref) {
       this.ref.onClose.subscribe((formResponse: any) => {
         if (formResponse) {
-          this.subjectItaceService.createSubjectItace(formResponse).subscribe({
+          this.adminService.createAdmin(formResponse).subscribe({
             next: () => {
               // Recargar datos después de crear y mostrar mensaje
-              this.reloadWithCurrentFilters('TCP creado exitosamente');
+              this.reloadWithCurrentFilters('Estudiante creado exitosamente');
             },
             error: (error) => this.handleError(error),
           });
@@ -243,11 +250,11 @@ export class SubjectItace {
   }
 
   /**
-   * Edita un semestre existente
+   * Edita un estudiante existente
    */
-  onEditSubject(data: any): void {
-    this.ref = this.dialogService.open(EditAddSubject, {
-      header: 'Editar Materia',
+  onEditAdmin(data: any): void {
+    this.ref = this.dialogService.open(EditAddAdmin, {
+      header: 'Editar Estudiante',
       modal: true,
       closable: true,
       width: '70%',
@@ -259,10 +266,10 @@ export class SubjectItace {
     if (this.ref) {
       this.ref.onClose.subscribe((formResponse: any) => {
         if (formResponse) {
-          this.subjectItaceService.updateSubjectItace(data.id, formResponse).subscribe({
+          this.adminService.updateAdmin(data.id, formResponse).subscribe({
             next: () => {
               // Recargar datos después de editar y mostrar mensaje
-              this.reloadWithCurrentFilters('Materia actualizada exitosamente');
+              this.reloadWithCurrentFilters('Estudiante actualizado exitosamente');
             },
             error: (error) => this.handleError(error),
           });
@@ -271,12 +278,56 @@ export class SubjectItace {
     }
   }
 
+  onViewAdmin(event: any) {
+    console.log('even', event);
+    this.loading.set(true);
+    this.authService
+      .resetUserPassword(event.id)
+      .pipe(
+        tap((v) => {
+          this.loading.set(false);
+          console.log('cambio de clave', v);
+          this.toastService.showSuccessToast('Se ha rieniciado la clave.');
+        }),
+        catchError(() => {
+          this.loading.set(false);
+          this.toastService.showErrorToastGeneric();
+          return of(null);
+        }),
+      )
+      .subscribe();
+    /**curp
+: 
+"PEGJ900515HDFRRN00"
+first_name
+: 
+"Flor"
+id
+: 
+2
+last_name
+: 
+"Colunga"
+numero_control
+: 
+"12345678901222"
+semestre_actual
+: 
+1
+semestre_numero
+: 
+10
+user_type
+: 
+"Admin" */
+  }
+
   /**
-   * Elimina un semestre
+   * Elimina un estudiante
    */
-  onDeleteSubject(data: any): void {
+  onDeleteAdmin(data: any): void {
     this.confirmationService.confirm({
-      message: '¿Desea eliminar este materia?',
+      message: '¿Desea eliminar este estudiante?',
       header: 'Confirmar Eliminación',
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancelar',
@@ -290,10 +341,10 @@ export class SubjectItace {
         severity: 'danger',
       },
       accept: () => {
-        this.subjectItaceService.deleteSubjectItace(data.id).subscribe({
+        this.adminService.deleteAdmin(data.id).subscribe({
           next: () => {
             // Verificar si después de eliminar aún hay registros en la página actual
-            const currentDataLength = this.subjectItace().length;
+            const currentDataLength = this.admins().length;
 
             if (currentDataLength === 1 && this.currentPage() > 0) {
               // Si era el último registro de la página y no es la primera página,
@@ -303,7 +354,7 @@ export class SubjectItace {
             }
 
             // Recargar datos después de eliminar y mostrar mensaje
-            this.reloadWithCurrentFilters('Materia eliminado exitosamente');
+            this.reloadWithCurrentFilters('Estudiante eliminado exitosamente');
           },
           error: (error) => this.handleError(error),
         });

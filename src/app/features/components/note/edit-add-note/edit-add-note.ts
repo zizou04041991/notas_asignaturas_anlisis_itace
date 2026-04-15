@@ -5,9 +5,11 @@ import { DialogService, DynamicDialogRef, DynamicDialogConfig } from 'primeng/dy
 import { SelectModule } from 'primeng/select';
 import { SubjectItaceService } from '../../subject-itace/services/subject_itace_service';
 import { StudentService } from '../../student/services/student_service';
-import { forkJoin, map } from 'rxjs';
+import { catchError, forkJoin, map, of, finalize, tap } from 'rxjs';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TcpService } from '../../tcp/services/tcp_service';
+import { LazyLoadEvent } from 'primeng/api';
+import { APP_CONFIG } from '../../../../shared/constants/config-constants';
 
 @Component({
   selector: 'app-edit-add-note',
@@ -19,9 +21,10 @@ import { TcpService } from '../../tcp/services/tcp_service';
 export class EditAddNote implements OnInit {
   formNote!: FormGroup;
   submitted = false;
-  SUBJECTS: { id: number; numero: number }[] = [];
+  SUBJECTS: { id: number; nombre: string }[] = [];
   TCPS: { id: number; numero: number }[] = [];
   STUDENTS: { id: number; nombre_completo: string }[] = [];
+  totalRecords: number = 0;
   subjectItaceService = inject(SubjectItaceService);
   studentService = inject(StudentService);
   tcpService = inject(TcpService);
@@ -33,19 +36,25 @@ export class EditAddNote implements OnInit {
     public config: DynamicDialogConfig,
   ) {
     this.formNote = new FormGroup({
-      estudiante_id: new FormControl(
+      estudiante: new FormControl(
         {
-          value: this.config?.data ? this.config?.data?.estudiante?.id : '',
+          value: this.config?.data ? this.config?.data?.estudiante : '',
           disabled: this.config?.data,
         },
         Validators.required,
       ),
-      asignatura_id: new FormControl(
-        this.config?.data ? this.config?.data?.asignatura?.id : '',
+      asignatura: new FormControl(
+        this.config?.data ? this.config?.data?.asignatura : '',
         Validators.required,
       ),
-      nota: new FormControl(this.config?.data ? this.config?.data?.nota : '', [Validators.required, Validators.min(1)]),
-      tcp_id: new FormControl(this.config?.data ? this.config?.data?.tcp.id : '', Validators.required),
+      nota: new FormControl(this.config?.data ? this.config?.data?.nota : '', [
+        Validators.required,
+        Validators.min(1),
+      ]),
+      tcp: new FormControl(
+        this.config?.data ? this.config?.data?.tcp_numero : '',
+        Validators.required,
+      ),
     });
   }
 
@@ -55,30 +64,59 @@ export class EditAddNote implements OnInit {
     forkJoin({
       students: this.studentService.getStudents(),
       subjects: this.subjectItaceService.getSubjectItaces(),
-      tcps: this.tcpService.getTcps()
+      tcps: this.tcpService.getTcps(),
     })
       .pipe(
-        map(({ students, subjects,tcps }) => {
-          console.log('sub', subjects);
-          this.STUDENTS = students.results;
+        map(({ students, subjects, tcps }) => {
+          // Transformar estudiantes
+          this.STUDENTS = students.results.map((est: any) => ({
+            ...est,
+            nombre_completo: `${est.last_name} ${est.first_name}`,
+          }));
+          // Asignar asignaturas y TCPs
           this.SUBJECTS = subjects.results;
           this.TCPS = tcps.results;
-          this.loading = false;
-          this.cd.detectChanges();
-          return {
-            students,
-            subjects,
-          };
+          this.totalRecords = subjects.total || 0;
+          return { students, subjects, tcps };
         }),
+        finalize(() => {
+          this.loading = false;
+          this.cd.markForCheck(); // ← Notifica a Angular sin forzar detección inmediata
+        })
       )
       .subscribe({
-        next: (report) => {
-          this.loading = false;
-        },
         error: (err) => {
+          console.error('Error cargando datos iniciales:', err);
           this.loading = false;
+          this.cd.markForCheck();
         },
       });
+  }
+
+  loadItems(event: LazyLoadEvent) {
+    this.loading = true;
+    const page = Math.floor((event.first || 0) / APP_CONFIG.PAGE_SIZE) + 1;
+
+    this.subjectItaceService
+      .getSubjectItaces(`?page=${page}`)
+      .pipe(
+        tap((v) => {
+          this.SUBJECTS = v.results;
+          this.totalRecords = v.total;
+          console.log('Asignaturas cargadas por paginación', v);
+        }),
+        finalize(() => {
+          this.loading = false;
+          this.cd.markForCheck();
+        }),
+        catchError((err) => {
+          console.error('Error en carga paginada:', err);
+          this.loading = false;
+          this.cd.markForCheck();
+          return of(null);
+        })
+      )
+      .subscribe();
   }
 
   onCancel() {

@@ -1,6 +1,13 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Router, RouterEvent } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -10,11 +17,11 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputTextModule } from 'primeng/inputtext';
 
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { 
-  faGraduationCap
-} from '@fortawesome/free-solid-svg-icons';
+import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
+import { LoginAuth } from '../services/login-auth';
+import { catchError, of, tap } from 'rxjs';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -36,32 +43,50 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class Login {
   faGraduationCap = faGraduationCap;
-  
-  loginData = {
-    numeroControl: '',
-    password: ''
-  };
+  formLogin: FormGroup;
+  loginAuth = inject(LoginAuth);
+
+  router = inject(Router);
 
   loading = false;
-  errorMessage = '';
   year = new Date().getFullYear();
+  submitted: boolean = false;
+  isStudent: boolean = true;
 
-  constructor(private router: Router) {}
+  constructor() {
+    this.isStudent = this.router.url.split('/')[1] === 'admin' ? false : true;
+    this.formLogin = new FormGroup({
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
+    });
+  }
 
-  onLogin() {
-    this.errorMessage = '';
-    this.loading = true;
+  accessLogin() {
+    this.submitted = true;
+    if (this.formLogin.valid) {
+      this.loginAuth
+        .login(this.formLogin.getRawValue())
+        .pipe(
+          tap((value) => {
+            console.log('el Ok es', value);
+            localStorage.setItem(this.loginAuth.tokenAccess, value.access);
+            localStorage.setItem(this.loginAuth.tokenRefresh, value.refresh);
+            localStorage.setItem(this.loginAuth.tokenUser, JSON.stringify(value.user));
+            this.loginAuth.isAuthenticatedSubject.next(true);
+            if (value.user.tipo === 'student') this.router.navigateByUrl('note');
+            else this.router.navigateByUrl('graphic');
+          }),
+        )
+        .subscribe();
+    }
+  }
+  campoInvalido(campo: string): boolean {
+    const control = this.formLogin.get(campo);
+    if (!control) return false;
 
-    // Simulación de login - aquí iría tu lógica real
-    setTimeout(() => {
-      if (this.loginData.numeroControl === 'admin' && this.loginData.password === 'admin') {
-        // Login exitoso
-        this.router.navigate(['/dashboard']);
-      } else {
-        // Login fallido
-        this.errorMessage = 'Número de control o contraseña incorrectos';
-        this.loading = false;
-      }
-    }, 1500);
+    if (this.submitted) {
+      return control.invalid;
+    }
+    return control.invalid && control.touched;
   }
 }

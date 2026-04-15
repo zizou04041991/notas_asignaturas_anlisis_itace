@@ -84,13 +84,12 @@
   margin: 0 0.25rem;
 }
 
-/* Centrar contenido de celdas y encabezados */
+/* Centrar contenido de celdas y encabezados (duplicado, puedes dejarlo o eliminar) */
 :host ::ng-deep .p-datatable-tbody > tr > td,
 :host ::ng-deep .p-datatable-thead > tr > th {
   text-align: center;
   vertical-align: middle;
 }
-
 
 :host ::ng-deep .p-column-filter {
   justify-content: center;
@@ -99,3 +98,20 @@
 :host ::ng-deep .p-column-filter input {
   text-align: center;
 }
+
+/* ========== Opción 1: Centrar filtros en la fila de filtros ========== */
+:host ::ng-deep .p-datatable-thead tr:last-child th {
+  text-align: center;                     /* Centra el contenido de la celda */
+}
+
+:host ::ng-deep .p-datatable-thead tr:last-child th .p-column-filter {
+  display: inline-block;                  /* Permite que el componente se ajuste al contenido */
+  width: auto;                            /* Anula el width:100% global */
+}
+
+:host ::ng-deep .p-datatable-thead tr:last-child th .p-column-filter input {
+  width: 100%;                            /* El input ocupará el ancho del componente */
+  min-width: 120px;                       /* Ancho mínimo para no quedar demasiado pequeño */
+}
+
+

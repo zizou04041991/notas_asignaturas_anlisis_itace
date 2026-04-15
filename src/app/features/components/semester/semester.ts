@@ -22,7 +22,7 @@ import {
   styleUrl: './semester.css',
   providers: [DialogService, ConfirmationService],
 })
-export class Semester implements OnInit {
+export class Semester  {
   private semesterService = inject(SemesterService);
   private toastService = inject(ToastService);
   private confirmationService = inject(ConfirmationService);
@@ -107,10 +107,7 @@ export class Semester implements OnInit {
     },
   };
 
-  ngOnInit() {
-    // Cargar datos iniciales
-    this.loadSemesters();
-  }
+
 
   /**
    * Carga los semestres con los filtros actuales

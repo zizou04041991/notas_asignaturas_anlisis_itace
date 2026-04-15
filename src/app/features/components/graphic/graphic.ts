@@ -33,51 +33,67 @@ export class Graphic implements OnInit {
         }
     });*/
 
-  ngOnInit() {
-    this.subjectItaceService.getNotes().subscribe((value) => {
-      if (value.total) {
-        this.countData = value.total;
-        const result = this.calcularResumenSimple(value.results);
-        const label = result.map((item) => item.nombre);
-        const backgroundColor = result.map((item) => item.color);
-        const data = result.map((item) => item.promedio as any);
-        this.initChart(label, backgroundColor, data);
-      }
-    });
+ngOnInit() {
+  this.subjectItaceService.getNotes().subscribe((response: any) => {
+    console.log('Respuesta:', response);
+
+    // Determinar si la respuesta es un array o un objeto paginado
+    let notas: NoteInterface[] = [];
+    if (Array.isArray(response)) {
+      notas = response;
+    } else if (response.results && Array.isArray(response.results)) {
+      notas = response.results;
+    }
+
+    if (notas.length > 0) {
+      this.countData = notas.length;
+      const { labels, backgroundColor, data } = this.calcularResumenSimple(notas) as any;
+      this.initChart(labels, backgroundColor, data);
+    } else {
+      this.countData = 0;
+    }
+  });
+}
+calcularResumenSimple(data: any[]) {
+  const asignaturasMap = new Map<string, any>();
+
+  data.forEach((item) => {
+    // Normalizar: trim, pasar a minúsculas (opcional), eliminar espacios múltiples
+    const nombreRaw = item.asignatura_nombre;
+    const nombreNormalizado = nombreRaw.trim().replace(/\s+/g, ' '); // espacios simples
+    // Si quieres ignorar mayúsculas/minúsculas, usa .toLowerCase() también
+    // const nombreNormalizado = nombreRaw.trim().toLowerCase().replace(/\s+/g, ' ');
+    
+    const color = item.asignatura_color;
+    const nota = item.nota;
+
+    if (!asignaturasMap.has(nombreNormalizado)) {
+      asignaturasMap.set(nombreNormalizado, {
+        nombre: nombreRaw,        // guardamos el original para mostrar
+        color: color,
+        sumaNotas: nota,
+        cantidad: 1,
+      });
+    } else {
+      const entry = asignaturasMap.get(nombreNormalizado);
+      entry.sumaNotas += nota;
+      entry.cantidad++;
+    }
+  });
+
+  const labels: string[] = [];
+  const backgroundColor: string[] = [];
+  const chartData: number[] = [];
+
+  for (const entry of asignaturasMap.values()) {
+    labels.push(entry.nombre);               // nombre original legible
+    backgroundColor.push(entry.color);
+    const promedio = entry.sumaNotas / entry.cantidad;
+    chartData.push(Number(promedio.toFixed(2)));
   }
 
-  calcularResumenSimple(
-    data: NoteInterface[],
-  ) {
-    const asignaturasMap = new Map();
-
-    // Agrupar y sumar
-    data.forEach((item) => {
-      const id = item.asignatura.id;
-      const nota = item.nota;
-
-      if (!asignaturasMap.has(id)) {
-        asignaturasMap.set(id, {
-          nombre: item.asignatura.nombre,
-          color: item.asignatura.color,
-          sumaNotas: nota,
-          cantidad: 1,
-        });
-      } else {
-        const data = asignaturasMap.get(id);
-        data.sumaNotas += nota;
-        data.cantidad++;
-      }
-    });
-
-    // Calcular promedios
-    return Array.from(asignaturasMap.entries()).map(([id, data]) => ({
-      id: id,
-      nombre: data.nombre,
-      color: data.color,
-      promedio: (data.sumaNotas / data.cantidad).toFixed(2),
-    }));
-  }
+  return { labels, backgroundColor, data: chartData };
+}
 
   initChart(labels: string[], backgroundColor: string[], data: number[]) {
     if (isPlatformBrowser(this.platformId)) {

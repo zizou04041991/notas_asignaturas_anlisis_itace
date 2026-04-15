@@ -8,22 +8,23 @@
       </label>
       <p-select
         [options]="STUDENTS"
-        formControlName="estudiante_id"
+        formControlName="estudiante"
         class="w-full transition duration-150"
         placeholder="Seleccione estudiante"
         optionLabel="nombre_completo"
         optionValue="id"
-        [invalid]="campoInvalido('estudiante_id')"
+        [invalid]="campoInvalido('estudiante')"
         [virtualScroll]="true"
-        [virtualScrollItemSize]="5"
+        [virtualScrollItemSize]="60"
+        appendTo="body"
         [filter]="true"
         filterBy="nombre_completo"
         [loading]="loading"
       />
 
-      @if (campoInvalido('estudiante_id')) {
+      @if (campoInvalido('estudiante')) {
         <div class="mt-1.5 text-xs text-red-500">
-          @if (formNote.get('estudiante_id')?.errors?.['required']) {
+          @if (formNote.get('estudiante')?.errors?.['required']) {
             <div class="flex items-start gap-1.5">
               <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
               <span>El estudiante es obligatorio</span>
@@ -33,7 +34,7 @@
       }
     </div>
 
-    <!-- Campo asignatura_id -->
+    <!-- Campo asignatura -->
     <div class="col-span-1">
       <label class="block text-xs font-medium text-gray-600 mb-1">
         Asignatura <span class="text-red-500">*</span>
@@ -41,22 +42,25 @@
 
       <p-select
         [options]="SUBJECTS"
-        formControlName="asignatura_id"
+        formControlName="asignatura"
         class="w-full transition duration-150"
         placeholder="Seleccione Asignatura"
         optionLabel="nombre"
         optionValue="id"
-        [invalid]="campoInvalido('asignatura_id')"
+        [invalid]="campoInvalido('asignatura')"
         [virtualScroll]="true"
-        [virtualScrollItemSize]="5"
         [filter]="true"
         filterBy="nombre"
         [loading]="loading"
+        [virtualScrollItemSize]="60"
+        appendTo="body"
+        [lazy]="true"
+        (onLazyLoad)="loadItems($event)"
       />
 
-      @if (campoInvalido('asignatura_id')) {
+      @if (campoInvalido('asignatura')) {
         <div class="mt-1.5 text-xs text-red-500">
-          @if (formNote.get('asignatura_id')?.errors?.['required']) {
+          @if (formNote.get('asignatura')?.errors?.['required']) {
             <div class="flex items-start gap-1.5">
               <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
               <span>La asignatura es obligatoria</span>
@@ -71,7 +75,7 @@
       <label class="block text-xs font-medium text-gray-600 mb-1">
         Nota <span class="text-red-500">*</span>
       </label>
-  
+
       <p-inputnumber
         formControlName="nota"
         class="w-full"
@@ -91,7 +95,7 @@
           }
         </div>
       }
-       @if (campoInvalido('nota')) {
+      @if (campoInvalido('nota')) {
         <div class="mt-1.5 text-xs text-red-500">
           @if (formNote.get('nota')?.errors?.['min']) {
             <div class="flex items-start gap-1.5">
@@ -103,30 +107,30 @@
       }
     </div>
 
-
-        <!-- Campo tcp -->
+    <!-- Campo tcp -->
     <div class="col-span-1">
       <label class="block text-xs font-medium text-gray-600 mb-1">
         TCP <span class="text-red-500">*</span>
       </label>
       <p-select
         [options]="TCPS"
-        formControlName="tcp_id"
+        formControlName="tcp"
         class="w-full transition duration-150"
         placeholder="Seleccione TCP"
         optionLabel="numero"
         optionValue="id"
-        [invalid]="campoInvalido('tcp_id')"
+        [invalid]="campoInvalido('tcp')"
         [virtualScroll]="true"
-        [virtualScrollItemSize]="5"
+        [virtualScrollItemSize]="60"
+        appendTo="body"
         [filter]="true"
         filterBy="numero"
         [loading]="loading"
       />
 
-      @if (campoInvalido('tcp_id')) {
+      @if (campoInvalido('tcp')) {
         <div class="mt-1.5 text-xs text-red-500">
-          @if (formNote.get('tcp_id')?.errors?.['required']) {
+          @if (formNote.get('tcp')?.errors?.['required']) {
             <div class="flex items-start gap-1.5">
               <i class="pi pi-times-circle text-red-400 text-xs mt-0.5"></i>
               <span>El estudiante es obligatorio</span>
@@ -135,7 +139,6 @@
         </div>
       }
     </div>
-
 
     <!-- Botones -->
     <div class="col-span-1 md:col-span-2 mt-2">

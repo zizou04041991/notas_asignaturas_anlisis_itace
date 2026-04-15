@@ -6,6 +6,9 @@ import {
   faChartBar,
   faChartLine,
   faFileLines,
+  faSignOutAlt,
+  faKey,
+  faUserShield,
 } from '@fortawesome/free-solid-svg-icons';
 
 export interface RutaConfig {
@@ -13,6 +16,7 @@ export interface RutaConfig {
   titulo: string;
   icono: IconDefinition;
   exact?: boolean;
+  user: 'all' | 'admin';
 }
 
 export const RUTAS_CONFIG: RutaConfig[] = [
@@ -21,31 +25,55 @@ export const RUTAS_CONFIG: RutaConfig[] = [
     titulo: 'Semestres',
     icono: faLayerGroup,
     exact: true,
+    user: 'admin',
   },
   {
     path: '/tcp',
     titulo: 'TCP',
-    icono: faFileLines
+    icono: faFileLines,
+    user: 'admin',
   },
   {
     path: '/subject',
     titulo: 'Asignaturas',
     icono: faBook,
+    user: 'admin',
   },
   {
     path: '/student',
     titulo: 'Estudiantes',
     icono: faUsers,
+    user: 'admin',
   },
   {
     path: '/note',
     titulo: 'Calificaciones',
     icono: faChartBar,
+    user: 'all',
   },
   {
     path: '/graphic',
     titulo: 'Gráfica Calificaciones',
     icono: faChartLine,
+    user: 'admin',
+  },
+  {
+    path: '/user-admin',
+    titulo: 'Adminstradores',
+    icono: faUserShield,
+    user: 'admin',
+  },
+  {
+    path: '/change-password',
+    titulo: 'Cambiar Clave',
+    icono: faKey,
+    user: 'all',
+  },
+  {
+    path: '/login',
+    titulo: 'Salir',
+    icono: faSignOutAlt,
+    user: 'all',
   },
 ];
 
@@ -75,6 +103,7 @@ export function getRutasParaMenu(): {
   titulo: string;
   icono: IconDefinition;
   exact?: boolean;
+  user: string;
 }[] {
   return RUTAS_CONFIG;
 }

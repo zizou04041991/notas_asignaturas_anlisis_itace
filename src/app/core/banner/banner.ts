@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { 
-  faBars, 
-  faBell, 
-  faEnvelope, 
+import {
+  faBars,
+  faBell,
+  faEnvelope,
   faSearch,
-  faUserCircle 
+  faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import { LoginAuth } from '../../auth/services/login-auth';
 
 @Component({
   selector: 'app-banner',
@@ -20,8 +21,8 @@ export class Banner {
   @Output() toggleMenu = new EventEmitter<void>();
 
   faBars = faBars;
-  faBell = faBell;
-  faEnvelope = faEnvelope;
-  faSearch = faSearch;
+
   faUserCircle = faUserCircle;
+  authService = inject(LoginAuth);
+  user = JSON.parse(localStorage.getItem(this.authService.tokenUser) as string);
 }

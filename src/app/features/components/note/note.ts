@@ -11,6 +11,7 @@ import { SelectModule } from 'primeng/select';
 import { ToastService } from '../../../shared/services/toast.service';
 import { FiltersState, ReusableTable, TableConfig } from '../../../shared/components/reusable-table/reusable-table';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { LoginAuth } from '../../../auth/services/login-auth';
 
 @Component({
   selector: 'app-note',
@@ -24,7 +25,7 @@ export class Note {
    private toastService = inject(ToastService);
    private confirmationService = inject(ConfirmationService);
    private dialogService = inject(DialogService);
- 
+   loginAuth = inject(LoginAuth);
    @ViewChild(ReusableTable) reusableTable!: ReusableTable;
  
    ref: DynamicDialogRef | null = null;
@@ -76,11 +77,13 @@ export class Note {
      );
    });
  
+   user = JSON.parse (localStorage.getItem(this.loginAuth.tokenUser) as string);
+   //, JSON.stringify(value.user));
    // Configuración de la tabla
    tableConfig: TableConfig = {
      columns: [
        {
-        field: 'estudiante_nombre__completo',
+        field: 'estudiante_nombre_completo',
         header: 'Estudiante',
         sortable: true,
         filterable: true,
@@ -88,7 +91,7 @@ export class Note {
         filterMatchMode: 'contains',
       },
       {
-        field: 'asignatura__nombre',
+        field: 'asignatura_nombre',
         header: 'Asignatura',
         sortable: true,
         filterable: true,
@@ -96,7 +99,7 @@ export class Note {
         filterMatchMode: 'contains',
       },
       {
-        field: 'semestre_cursado__numero',
+        field: 'semestre_numero',
         header: 'Semestre',
         sortable: true,
         filterable: true,
@@ -104,7 +107,7 @@ export class Note {
         filterMatchMode: 'contains',
       },
       {
-        field: 'tcp__numero',
+        field: 'tcp_numero',
         header: 'TCP',
         sortable: true,
         filterable: true,
@@ -129,16 +132,13 @@ export class Note {
      sortField: 'nota',
      sortOrder: 1,
      actions: {
-       edit: true,
-       delete: true,
+       edit: this.user && this.user?.tipo === 'admin',
+       delete: this.user && this.user?.tipo === 'admin',
        view: false,
      },
    };
  
-   ngOnInit() {
-     // Cargar datos iniciales
-     this.loadNotes();
-   }
+
  
    /**
     * Carga los Calificacións con los filtros actuales
@@ -157,11 +157,11 @@ export class Note {
        next: (data) => {
          this.notes.set(data.results.map((est: any) => ({
           ...est,
-          estudiante_nombre__completo: est.estudiante.nombre_completo,
+         /* estudiante_nombre__completo: est.estudiante.nombre_completo,
           asignatura__nombre: est.asignatura.nombre,
           semestre_cursado__numero: est.semestre_cursado.numero,
           tcp__numero: est.tcp.numero
-
+*/
 
           //semestre_actual__numero: est.semestre_actual.numero
          })) || []);
@@ -178,7 +178,7 @@ export class Note {
        error: (error) => {
          this.loading.set(false);
          this.totalRecords.set(0); // Reset en caso de error
-         this.handleError(error);
+         this.toastService.showErrorToastGeneric();
        },
      });
    }
@@ -261,7 +261,14 @@ export class Note {
                // Recargar datos después de crear y mostrar mensaje
                this.reloadWithCurrentFilters('Calificación creado exitosamente');
              },
-             error: (error) => this.handleError(error),
+             error: (error) => {
+              console.log('error', error, 'non_field_errors' in error);
+              if('non_field_errors' in error.error){
+                 this.toastService.showErrorToast(error.error.non_field_errors[0]);
+              }
+              else
+              this.toastService.showErrorToastGeneric();
+             }
            });
          }
        });
@@ -290,7 +297,13 @@ export class Note {
                // Recargar datos después de editar y mostrar mensaje
                this.reloadWithCurrentFilters('Calificación actualizado exitosamente');
              },
-             error: (error) => this.handleError(error),
+             error: (error) => {
+               if('non_field_errors' in error){
+                 this.toastService.showErrorToast(error['non_field_errors']);
+              }
+              else
+              this.toastService.showErrorToastGeneric();
+             }
            });
          }
        });
@@ -331,7 +344,7 @@ export class Note {
              // Recargar datos después de eliminar y mostrar mensaje
              this.reloadWithCurrentFilters('Calificación eliminado exitosamente');
            },
-           error: (error) => this.handleError(error),
+           error: (error) => this.toastService.showErrorToastGeneric()
          });
        },
      });
@@ -347,16 +360,5 @@ export class Note {
        .join(', ');
    }
  
-   /**
-    * Maneja errores de las peticiones HTTP
-    */
-   private handleError(error: any): void {
-     if (error.status !== 0 && error.status !== 401) {
-       if (error?.error?.hasOwnProperty('error')) {
-         this.toastService.showErrorToast(error.error.error);
-       } else {
-         this.toastService.showErrorToastGeneric();
-       }
-     }
-   }
+ 
  }

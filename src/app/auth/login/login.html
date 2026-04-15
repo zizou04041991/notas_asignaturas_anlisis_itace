@@ -1,54 +1,61 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+<div
+  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4"
+>
   <!-- Contenedor principal con efecto de tarjeta -->
   <div class="w-full max-w-md">
     <!-- Efecto de sombra y borde sutil -->
     <div class="relative">
       <!-- Decoración superior con gradiente -->
-      <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] rounded-full"></div>
-      
+      <div
+        class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] rounded-full"
+      ></div>
+
       <!-- Tarjeta principal -->
       <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
-        
         <!-- Logo y título -->
         <div class="text-center mb-8">
           <!-- Contenedor del logo con fondo decorativo -->
           <div class="relative inline-block">
-            <div class="absolute inset-0 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] rounded-full blur-lg opacity-20"></div>
-            <div class="relative w-20 h-20 mx-auto bg-gradient-to-br from-[#B3294B] to-[#8A1F3A] rounded-2xl rotate-45 flex items-center justify-center shadow-lg">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] rounded-full blur-lg opacity-20"
+            ></div>
+            <div
+              class="relative w-20 h-20 mx-auto bg-gradient-to-br from-[#B3294B] to-[#8A1F3A] rounded-2xl rotate-45 flex items-center justify-center shadow-lg"
+            >
               <fa-icon [icon]="faGraduationCap" class="text-white text-3xl -rotate-45"></fa-icon>
             </div>
           </div>
-          
+
           <h2 class="text-2xl font-bold text-gray-800 mt-4">Bienvenido</h2>
           <p class="text-gray-500 text-sm mt-1">Inicia sesión en tu cuenta</p>
         </div>
 
         <!-- Formulario -->
-        <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="space-y-6">
+        <form class="space-y-6" [formGroup]="formLogin">
           <!-- Campo Número de Control -->
           <div class="space-y-2">
-            <label for="numeroControl" class="block text-sm font-medium text-gray-700">
-              Número de Control
+            <label for="username" class="block text-sm font-medium text-gray-700">
+              {{ !isStudent ? 'Usuario' : 'Número de Control' }}
             </label>
             <div class="relative">
-              <i class="pi pi-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
+              <i
+                class="pi pi-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"
+              ></i>
               <input
-                id="numeroControl"
-                name="numeroControl"
+                id="username"
+                name="username"
+                formControlName="username"
                 type="text"
                 pInputText
-                [(ngModel)]="loginData.numeroControl"
-                required
-                #numeroControl="ngModel"
                 class="w-full pl-10 p-3 border-2 border-gray-200 rounded-xl focus:border-[#B3294B] focus:ring-2 focus:ring-[#B3294B]/20 transition-all duration-200"
-                [class.ng-invalid]="numeroControl.invalid && numeroControl.touched"
-                placeholder="Ingresa tu número de control"
+                [class.ng-invalid]="campoInvalido('username')"
+                placeholder="{{ !isStudent ? 'Ingrese su usuario' : 'Ingresa tu número de control'}}"
               />
             </div>
-            @if (numeroControl.invalid && numeroControl.touched) {
+            @if (formLogin.get('username')?.invalid && formLogin.get('username')?.touched) {
               <small class="text-red-500 text-xs flex items-center gap-1 mt-1">
                 <i class="pi pi-exclamation-circle"></i>
-                El número de control es requerido
+                {{ !isStudent ? 'El usuario es requerido' : 'El Número de Control es requerido' }}
               </small>
             }
           </div>
@@ -59,22 +66,23 @@
               Contraseña
             </label>
             <div class="relative">
-              <i class="pi pi-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"></i>
+              <i
+                class="pi pi-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"
+              ></i>
               <p-password
                 id="password"
                 name="password"
-                [(ngModel)]="loginData.password"
-                required
-                #password="ngModel"
                 [toggleMask]="true"
+                formControlName="password"
                 [feedback]="false"
                 inputStyleClass="w-full pl-10 p-3 border-2 border-gray-200 rounded-xl focus:border-[#B3294B] focus:ring-2 focus:ring-[#B3294B]/20 transition-all duration-200"
                 styleClass="w-full"
                 placeholder="Ingresa tu contraseña"
-                [inputStyle]="{'width': '100%'}"
+                [inputStyle]="{ width: '100%' }"
+                [class.ng-invalid]="campoInvalido('password')"
               ></p-password>
             </div>
-            @if (password.invalid && password.touched) {
+            @if (formLogin.get('password')?.invalid && formLogin.get('password')?.touched) {
               <small class="text-red-500 text-xs flex items-center gap-1 mt-1">
                 <i class="pi pi-exclamation-circle"></i>
                 La contraseña es requerida
@@ -82,20 +90,10 @@
             }
           </div>
 
-          <!-- Mensaje de error general -->
-          @if (errorMessage) {
-            <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-lg">
-              <p class="text-red-700 text-sm flex items-center gap-2">
-                <i class="pi pi-exclamation-triangle"></i>
-                {{ errorMessage }}
-              </p>
-            </div>
-          }
-
           <!-- Botón de inicio de sesión -->
           <button
-            type="submit"
-            [disabled]="loginForm.invalid || loading"
+            type="button"
+            (click)="accessLogin()"
             class="w-full py-3 px-4 bg-gradient-to-r from-[#B3294B] to-[#8A1F3A] text-white font-medium rounded-xl shadow-lg shadow-[#B3294B]/30 hover:shadow-xl hover:shadow-[#B3294B]/40 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg flex items-center justify-center gap-2"
           >
             @if (loading) {

@@ -107,10 +107,7 @@ export class TCP {
     },
   };
 
-  ngOnInit() {
-    // Cargar datos iniciales
-    this.loadTcps();
-  }
+
 
   /**
    * Carga los semestres con los filtros actuales

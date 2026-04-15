@@ -27,23 +27,27 @@ export class EditAddStudent implements OnInit {
   ) {
     console.log('datos', this.config?.data);
     this.formStudent = new FormGroup({
-      curp: new FormControl(this.config?.data ? this.config?.data?.curp : '', Validators.required),
-      nombre: new FormControl(
-        this.config?.data ? this.config?.data?.nombre : '',
+      curp: new FormControl(this.config?.data ? this.config?.data?.curp : '', [
+        Validators.required,
+        Validators.pattern(/^.{18}$/),
+      ]),
+      first_name: new FormControl(
+        this.config?.data ? this.config?.data?.first_name : '',
         Validators.required,
       ),
-      apellidos: new FormControl(
-        this.config?.data ? this.config?.data?.apellidos : '',
+      last_name: new FormControl(
+        this.config?.data ? this.config?.data?.last_name : '',
         Validators.required,
       ),
-      semestre_id: new FormControl(
-        this.config?.data ? this.config?.data?.semestre_actual?.id : '',
+
+      semestre_actual: new FormControl(
+        '',
         Validators.required,
       ),
-      numero_control: new FormControl(
-        this.config?.data ? this.config?.data?.numero_control : '',
+      numero_control: new FormControl(this.config?.data ? this.config?.data?.numero_control : '', [
         Validators.required,
-      ),
+        Validators.pattern(/^.{14}$/),
+      ]),
     });
   }
 
@@ -51,10 +55,21 @@ export class EditAddStudent implements OnInit {
     this.loading = true;
     this.semesterService.getSemesters().subscribe(
       (value) => {
-        console.log('el listado', value);
         this.SEMESTER = value.results;
+        if (this.config?.data) {
+          const semestreActualId = this.config?.data?.semestre_actual;
+          const semestreEncontrado = this.SEMESTER.find((s) => s.id === semestreActualId);
+
+          // Si existe, actualizamos el control con el objeto completo
+          if (semestreEncontrado) {
+            console.log('semestreEncontrado', semestreEncontrado);
+            this.formStudent.patchValue({
+              semestre_actual: semestreEncontrado.id, // debe tener { id, numero }
+            });
+          }
+        }
         this.loading = false;
-        this.cd.detectChanges();
+        //this.cd.detectChanges();
       },
       (error) => {
         this.loading = false;
@@ -70,7 +85,11 @@ export class EditAddStudent implements OnInit {
     this.submitted = true;
 
     if (this.formStudent.valid) {
-      this.ref?.close(this.formStudent.getRawValue());
+      let saveData = this.formStudent.getRawValue();
+      console.log('saveData', saveData);
+      if (this.config?.data === undefined || this.config?.data === null)
+        saveData['password'] = saveData.numero_control;
+      this.ref?.close(saveData);
     } else {
       this.formStudent.markAllAsTouched();
     }
